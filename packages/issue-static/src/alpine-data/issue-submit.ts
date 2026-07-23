@@ -4,7 +4,7 @@ import message from "./message";
 
 const messageUtils = message();
 
-export default (subjectName: string, templateName: string) => ({
+export default (templateName: string) => ({
 
     issueForm: {
         kind: "Issue",
@@ -28,7 +28,7 @@ export default (subjectName: string, templateName: string) => ({
             closedAt: "",
             approved: true,
             approvedTime: "",
-            subjectName: subjectName,
+            subjectName: "",
             top: false
         },
         status: {
@@ -71,7 +71,7 @@ export default (subjectName: string, templateName: string) => ({
             } else {
                 messageUtils.showMessage("error", res.statusText, 2000);
             }
-            window.location.href = `${window.location.origin}/subject/${subjectName}/issues`;
+            window.location.href = `${window.location.origin}/issues`;
         }).catch(error => {
             messageUtils.showMessage("error", error.message, 2000);
         }).finally(() => {
@@ -97,7 +97,7 @@ export default (subjectName: string, templateName: string) => ({
                     closedAt: "",
                     approved: true,
                     approvedTime: "",
-                    subjectName: subjectName,
+                    subjectName: "",
                     top: false
                 },
                 status: {
@@ -112,7 +112,7 @@ export default (subjectName: string, templateName: string) => ({
     },
 
     cancelCreate() {
-        window.location.href = `${window.location.origin}/subject/${subjectName}/issues`;
+        window.location.href = `${window.location.origin}/issues`;
     },
 
     getIssueTemplateOptions(templateName: string) {

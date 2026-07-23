@@ -61,12 +61,6 @@ public class IssueQuery extends SortableRequest {
         return StringUtils.isBlank(ownerName) ? null : ownerName;
     }
 
-    @Schema(description = "subject name.")
-    public String getSubjectName() {
-        String subjectName = queryParams.getFirst("subjectName");
-        return StringUtils.isBlank(subjectName) ? null : subjectName;
-    }
-
     @Schema(description = "IssueTemplate name.")
     public String getIssueTemplate() {
         String issueTemplate = queryParams.getFirst("issueTemplate");
@@ -122,9 +116,6 @@ public class IssueQuery extends SortableRequest {
         if (StringUtils.isNotBlank(getIssueTemplate())) {
             builder.andQuery(contains("spec.issueTemplate", getIssueTemplate()));
         }
-        if (StringUtils.isNotBlank(getSubjectName())) {
-            builder.andQuery(contains("spec.subjectName", getSubjectName()));
-        }
         return builder.build();
     }
 
@@ -158,12 +149,6 @@ public class IssueQuery extends SortableRequest {
                 .description("IssueMessages filtered by keyword.")
                 .implementation(String.class)
                 .required(false))
-            .parameter(parameterBuilder()
-                .in(ParameterIn.QUERY)
-                .name("subjectName")
-                .description("the subject of issue")
-                .implementation(String.class)
-                .required(true))
             .parameter(parameterBuilder()
                 .in(ParameterIn.QUERY)
                 .name("ownerName")

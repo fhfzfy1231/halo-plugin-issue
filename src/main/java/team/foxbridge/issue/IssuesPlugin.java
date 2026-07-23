@@ -92,11 +92,15 @@ public class IssuesPlugin extends BasePlugin {
             indexSpecs.add(IndexSpecs.<IssueTemplate, String>single("spec.owner", String.class)
                 .indexFunc(issueTemplate -> issueTemplate.getSpec().getOwner()));
             indexSpecs.add(IndexSpecs.<IssueTemplate, String>single("spec.scope", String.class)
-                .indexFunc(issueTemplate -> issueTemplate.getSpec().getScope().name()));
+                .indexFunc(issueTemplate -> Optional.ofNullable(issueTemplate.getSpec().getScope())
+                    .map(Enum::name)
+                    .orElse(null)));
             indexSpecs.add(IndexSpecs.<IssueTemplate, String>single("spec.subjectName", String.class)
                 .indexFunc(issueTemplate -> issueTemplate.getSpec().getSubjectName()));
             indexSpecs.add(IndexSpecs.<IssueTemplate, String>single("spec.subjectType", String.class)
-                .indexFunc(issueTemplate -> issueTemplate.getSpec().getSubjectType().name()));
+                .indexFunc(issueTemplate -> Optional.ofNullable(issueTemplate.getSpec().getSubjectType())
+                    .map(Enum::name)
+                    .orElse(null)));
         });
 
         schemeManager.register(Issue.class, indexSpecs -> {

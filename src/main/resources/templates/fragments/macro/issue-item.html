@@ -3,10 +3,10 @@
         <div class="piw-space-y-2">
             <div class="piw-flex piw-items-center piw-gap-x-3">
                 <a class="piw-text-base piw-font-medium piw-text-neutral-800"
-                   th:href="${'/subject/' + issueVO.spec.subjectName + '/issues/' + issueVO.metadata.name}"
+                   th:href="${'/issues/' + issueVO.metadata.name}"
                    th:text="${issueVO.spec.title}"></a>
                 <div class="piw-flex piw-items-center piw-gap-1.5 piw-overflow-hidden"
-                     th:if="${#lists.size(issueVO.issueLabels) > 0}">
+                     th:if="${issueVO.issueLabels != null and #lists.size(issueVO.issueLabels) > 0}">
                     <th:block th:each="item:${issueVO.issueLabels}">
                             <span th:text="${item.spec.labelName}" th:attr="x-data=|{labelColor: '${item.spec.color}'}|" :style="'background-color: ' + labelColor"
                                   class="piw-px-2 piw-py-1 piw-text-xs piw-rounded-full piw-text-white"></span>

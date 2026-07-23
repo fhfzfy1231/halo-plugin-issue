@@ -64,7 +64,7 @@ public class Issue extends AbstractExtension {
         @Schema(description = "Release timestamp. This field can be customized by owner")
         private Instant releaseTime;
 
-        @Schema(description = "关联主体唯一标识", requiredMode = REQUIRED)
+        @Schema(description = "兼容旧版本数据的关联主体标识；全局 Issue 可为空")
         private String subjectName;
 
         @Schema(requiredMode = REQUIRED, defaultValue = "false", description = "是否置顶")

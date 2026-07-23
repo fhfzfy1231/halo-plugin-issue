@@ -38,6 +38,10 @@ export default definePlugin({
         children: [
           {
             path: "",
+            redirect: { name: "Issue" },
+          },
+          {
+            path: "list",
             name: "Issue",
             component: IssueList,
             meta: {
@@ -54,7 +58,7 @@ export default definePlugin({
             },
           },
           {
-            path: "/issue-templates",
+            path: "templates",
             name: "IssueTemplate",
             component: IssueTemplateList,
             meta: {
@@ -69,7 +73,7 @@ export default definePlugin({
             },
           },
           {
-            path: "/issue-templates/editor",
+            path: "templates/editor",
             name: "IssueTemplateEditor",
             component: IssueTemplateEditor,
             meta: {
@@ -78,7 +82,7 @@ export default definePlugin({
             },
           },
           {
-            path: "/issue-labels",
+            path: "labels",
             name: "IssueLabel",
             component: IssueLabelList,
             meta: {
@@ -93,6 +97,20 @@ export default definePlugin({
             },
           },
         ],
+      },
+    },
+    {
+      parentName: "Root",
+      route: {
+        path: "/issue-templates",
+        redirect: { name: "IssueTemplate" },
+      },
+    },
+    {
+      parentName: "Root",
+      route: {
+        path: "/issue-labels",
+        redirect: { name: "IssueLabel" },
       },
     },
   ],

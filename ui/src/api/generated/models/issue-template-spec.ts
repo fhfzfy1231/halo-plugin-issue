@@ -68,6 +68,7 @@ export interface IssueTemplateSpec {
 }
 
 export const IssueTemplateSpecScopeEnum = {
+    Global: 'GLOBAL',
     SubjectType: 'SUBJECT_TYPE',
     Subject: 'SUBJECT'
 } as const;
@@ -82,5 +83,4 @@ export const IssueTemplateSpecSubjectTypeEnum = {
 } as const;
 
 export type IssueTemplateSpecSubjectTypeEnum = typeof IssueTemplateSpecSubjectTypeEnum[keyof typeof IssueTemplateSpecSubjectTypeEnum];
-
 

@@ -63,9 +63,9 @@ const initIssueTemplate = ref<IssueTemplate>({
   },
   spec: {
     name: "",
-    scope: "SUBJECT_TYPE",
+    scope: "GLOBAL",
     subjectName: "",
-    subjectType: "PROJECT",
+    subjectType: undefined,
     description: "",
     owner: "",
     fields: {},

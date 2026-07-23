@@ -66,13 +66,13 @@ public class IssueFinderImpl implements IssueFinder {
     }
 
     @Override
-    public Mono<ListResult<IssueVO>> list(Integer page, Integer size, String subjectName, String issueState) {
+    public Mono<ListResult<IssueVO>> list(Integer page, Integer size, String issueState) {
         var query = empty();
         if (StringUtils.isNoneBlank(issueState) && !"all".equals(issueState)) {
             query = and(query, equal("status.state", issueState));
         }
         var pageRequest = PageRequestImpl.of(pageNullSafe(page), sizeNullSafe(size), defaultSort());
-        return pageIssues(query, pageRequest, subjectName);
+        return pageIssues(query, pageRequest);
     }
 
     @Override
@@ -120,13 +120,13 @@ public class IssueFinderImpl implements IssueFinder {
     }
 
     @Override
-    public Mono<ListResult<IssueVO>> listByLabel(int pageNum, Integer pageSize, String labelName, String subjectName) {
+    public Mono<ListResult<IssueVO>> listByLabel(int pageNum, Integer pageSize, String labelName) {
         var query = empty();
         if (StringUtils.isNoneBlank(labelName)) {
             query = and(query, equal("spec.labels", labelName));
         }
         var pageRequest = PageRequestImpl.of(pageNullSafe(pageNum), sizeNullSafe(pageSize), defaultSort());
-        return pageIssues(query, pageRequest, subjectName);
+        return pageIssues(query, pageRequest);
     }
 
     @Override
@@ -142,13 +142,10 @@ public class IssueFinderImpl implements IssueFinder {
 
     record IssueMessageLabelPair(String labelName, String issueMessageName){}
 
-    private Mono<ListResult<IssueVO>> pageIssues(Condition additionalQuery, PageRequest page, String subjectName) {
+    private Mono<ListResult<IssueVO>> pageIssues(Condition additionalQuery, PageRequest page) {
         var query = FIXED_QUERY;
         if (additionalQuery != null) {
             query = and(query, additionalQuery);
-        }
-        if (subjectName != null) {
-            query = and(query, equal("spec.subjectName", subjectName));
         }
         var listOptions = ListOptions.builder()
             .fieldQuery(query)
@@ -185,8 +182,9 @@ public class IssueFinderImpl implements IssueFinder {
                     .thenReturn(imv);
             })
             .flatMap(imv -> {
-                Set<String> labels = imv.getSpec().getLabels();
-                return Flux.fromStream(labels.stream())
+                Set<String> labels = ObjectUtils.defaultIfNull(
+                    imv.getSpec().getLabels(), Set.of());
+                return Flux.fromIterable(labels)
                     .flatMap(label -> client.fetch(IssueLabel.class, label))
                     .collectList()
                     .doOnNext(imv::setIssueLabels)

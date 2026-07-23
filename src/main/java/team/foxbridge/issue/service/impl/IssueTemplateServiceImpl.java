@@ -56,6 +56,12 @@ public class IssueTemplateServiceImpl implements IssueTemplateService {
 
     @Override
     public Mono<IssueTemplateOptions> listIssueTemplateOptions(String subjectTypeName, String subjectName) {
+        Flux<IssueTemplate> globalTemplates = client.listAll(IssueTemplate.class,
+            ListOptions.builder().fieldQuery(
+                    equal("spec.scope", IssueTemplate.IssueTemplateScope.GLOBAL.name()))
+                .build(),
+            Sort.by(Sort.Order.desc("metadata.creationTimestamp")));
+
         // 查询特定主体类型的模版
         Flux<IssueTemplate> specialTypeTemplates = client.listAll(IssueTemplate.class,
             ListOptions.builder().fieldQuery(and(
@@ -78,7 +84,7 @@ public class IssueTemplateServiceImpl implements IssueTemplateService {
             Sort.by(Sort.Order.desc("metadata.creationTimestamp")));
 
         // 合并两个结果流并转换为 IssueLabelOptions
-        return Flux.merge(specialTypeTemplates, specialSubjectTemplates)
+        return Flux.merge(globalTemplates, specialTypeTemplates, specialSubjectTemplates)
             .map(issueTemplate -> IssueTemplateOptions.IssueTemplateItem.from(issueTemplate))
             .collectList()
             .map(issueLabelItems -> {
@@ -98,12 +104,15 @@ public class IssueTemplateServiceImpl implements IssueTemplateService {
         return client.get(IssueTemplate.class, templateName).map(issueTemplate -> {
             IssueTemplateRender issueTemplateRender = new IssueTemplateRender();
             issueTemplateRender.setDisplayName(issueTemplate.getSpec().getName());
-            issueTemplateRender.setComponents(issueTemplate.getSpec().getFields().values().stream()
-                .toList());
-            issueTemplateRender.setAnnotationFields(issueTemplate.getSpec().getFields().entrySet()
-                .stream()
-                .map(Map.Entry::getKey)
-                .toList());
+            Map<String, IssueTemplate.TemplateField> fields =
+                issueTemplate.getSpec().getFields();
+            if (fields == null || fields.isEmpty()) {
+                issueTemplateRender.setComponents(java.util.List.of());
+                issueTemplateRender.setAnnotationFields(java.util.List.of());
+            } else {
+                issueTemplateRender.setComponents(fields.values().stream().toList());
+                issueTemplateRender.setAnnotationFields(fields.keySet().stream().toList());
+            }
             return issueTemplateRender;
         });
     }

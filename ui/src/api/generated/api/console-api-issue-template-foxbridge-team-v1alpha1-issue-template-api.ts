@@ -462,6 +462,7 @@ export class ConsoleApiIssueTemplateFoxbridgeTeamV1alpha1IssueTemplateApi extend
  * @export
  */
 export const ListIssueTemplatesScopeEnum = {
+    Global: 'GLOBAL',
     SubjectType: 'SUBJECT_TYPE',
     Subject: 'SUBJECT'
 } as const;

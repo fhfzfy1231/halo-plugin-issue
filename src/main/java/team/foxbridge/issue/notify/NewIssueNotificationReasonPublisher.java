@@ -3,14 +3,12 @@ package team.foxbridge.issue.notify;
 import team.foxbridge.issue.Constant;
 import team.foxbridge.issue.event.IssueCreatedEvent;
 import team.foxbridge.issue.extension.Issue;
-import team.foxbridge.issue.extension.IssueSubject;
 import team.foxbridge.issue.util.ReasonDataConverterUtils;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.notification.Reason;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.infra.ExternalLinkProcessor;
@@ -50,16 +48,16 @@ public class NewIssueNotificationReasonPublisher {
         var newIssueNotified = annotations.getOrDefault(Constant.NEW_ISSUE_NOTIFIED_ANNO,"false");
         //只针对没有通知的issue进行通知
         if (Objects.equals(newIssueNotified,"false")) {
-            client.fetch(IssueSubject.class, issue.getSpec().getSubjectName()).map(issueSubject -> {
-                List<String> participateUsers = new ArrayList<>(issueSubject.getSpec().getParticipateUsers());
-                participateUsers.add(issueSubject.getSpec().getOwner());
-                String issueSubjectTypeName = IssueSubject.parseSubjectType(issueSubject.getSpec()
-                    .getSubjectType());
-                participateUsers.forEach(
-                    participateUser -> newIssueOnSubjectReasonPublisher.publishReasonBy(issue,
-                        participateUser, issueSubject.getSpec().getDisplayName(), issueSubjectTypeName));
-                return Mono.empty();
-            });
+            List<String> participateUsers = new ArrayList<>();
+            if (issue.getSpec().getAssignees() != null) {
+                participateUsers.addAll(issue.getSpec().getAssignees());
+            }
+            if (issue.getSpec().getOwner() != null) {
+                participateUsers.add(issue.getSpec().getOwner());
+            }
+            participateUsers.stream().distinct().forEach(
+                participateUser -> newIssueOnSubjectReasonPublisher.publishReasonBy(issue,
+                    participateUser, "全站 Issue", "Issue"));
             //添加已经通知的标识
             annotations.put(Constant.NEW_ISSUE_NOTIFIED_ANNO, "true");
             client.update(issue);
@@ -80,7 +78,8 @@ public class NewIssueNotificationReasonPublisher {
             if(approved){
                 contentUrl = externalLinkProcessor.processLink(issue.getStatus().getPermalink());
             }else{
-                contentUrl = externalLinkProcessor.processLink("/console/issueSubject/issues?subjectName=" + issue.getSpec().getSubjectName() + "&approved=false");
+                contentUrl = externalLinkProcessor.processLink(
+                    "/console/issues/list?approved=false");
             }
             var reasonSubject = Reason.Subject.builder()
                 .apiVersion(issue.getApiVersion())

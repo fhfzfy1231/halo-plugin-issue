@@ -54,7 +54,10 @@ public class NewIssueCommentNotificationReasonPublisher {
         //只针对没有通知的issue进行通知
         if (Objects.equals(newIssueNotified,"false")) {
             client.fetch(Issue.class, issueComment.getSpec().getIssueName()).map(issue -> {
-                List<String> needNotifyUsers = new ArrayList<>(issue.getSpec().getAssignees());
+                List<String> needNotifyUsers = new ArrayList<>();
+                if (issue.getSpec().getAssignees() != null) {
+                    needNotifyUsers.addAll(issue.getSpec().getAssignees());
+                }
 
                 if(StringUtils.isNotBlank(issueComment.getSpec().getQuoteCommentUid())){
                     // 引用的评论，调用回复通知
@@ -97,10 +100,12 @@ public class NewIssueCommentNotificationReasonPublisher {
             if(approved){
                 contentUrl = externalLinkProcessor.processLink(issue.getStatus().getPermalink()) + "#" + issueComment.getMetadata().getName();
             }else{
-                contentUrl = externalLinkProcessor.processLink("/console/issueSubject/issues?subjectName=" + issue.getSpec().getSubjectName() + "&approved=false");
+                contentUrl = externalLinkProcessor.processLink(
+                    "/console/issues/list?approved=false");
             }
 
-            if(issue.getSpec().getAssignees().contains(needNotifyUser)){
+            if(issue.getSpec().getAssignees() != null
+                && issue.getSpec().getAssignees().contains(needNotifyUser)){
                 issueTitle = "你负责经办的Issue【" + issue.getSpec().getTitle() + "（" + Issue.parseIssueState(issue.getStatus().getState()) + "）】下有新的评论";
             }else if (issue.getSpec().getOwner().equals(needNotifyUser)){
                 issueTitle = "你创建的Issue【" + issue.getSpec().getTitle() + "（" + Issue.parseIssueState(issue.getStatus().getState()) + "）】下的有新的评论";
@@ -158,12 +163,14 @@ public class NewIssueCommentNotificationReasonPublisher {
             if(issueReplyComment.getSpec().getApproved()){
                 contentUrl = externalLinkProcessor.processLink(issue.getStatus().getPermalink()) + "#" + issueReplyComment.getMetadata().getName();
             }else{
-                contentUrl = externalLinkProcessor.processLink("/console/issueSubject/issues?subjectName=" + issue.getSpec().getSubjectName() + "&approved=false");
+                contentUrl = externalLinkProcessor.processLink(
+                    "/console/issues/list?approved=false");
             }
 
             if(needNotifyUser.equals(originalIssueComment.getSpec().getOwner())){
                 notifyTitle =  "你在Issue【" + issue.getSpec().getTitle() + "（" + Issue.parseIssueState(issue.getStatus().getState()) + "）】下创建的评论中有新的回复";
-            }else if(issue.getSpec().getAssignees().contains(needNotifyUser)){
+            }else if(issue.getSpec().getAssignees() != null
+                && issue.getSpec().getAssignees().contains(needNotifyUser)){
                 notifyTitle = "你负责经办的Issue【" + issue.getSpec().getTitle() + "（" + Issue.parseIssueState(issue.getStatus().getState()) + "）】下的评论有新的回复";
             }else if (issue.getSpec().getOwner().equals(needNotifyUser)){
                 notifyTitle = "你创建的Issue【" + issue.getSpec().getTitle() + "（" + Issue.parseIssueState(issue.getStatus().getState()) + "）】下的评论有新的回复";

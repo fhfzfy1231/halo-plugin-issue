@@ -221,9 +221,7 @@ export const ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApiAxiosParamCreator = fun
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listIssues: async (subjectName: string, page?: number, size?: number, labelSelector?: Array<string>, fieldSelector?: Array<string>, sort?: Array<string>, keyword?: string, ownerName?: string, label?: string, startDate?: string, endDate?: string, approved?: boolean, issueTemplate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'subjectName' is not null or undefined
-            assertParamExists('listIssues', 'subjectName', subjectName)
+        listIssues: async (subjectName?: string, page?: number, size?: number, labelSelector?: Array<string>, fieldSelector?: Array<string>, sort?: Array<string>, keyword?: string, ownerName?: string, label?: string, startDate?: string, endDate?: string, approved?: boolean, issueTemplate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/apis/console.api.issue.foxbridge.team/v1alpha1/issues`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -520,7 +518,7 @@ export const ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApiFp = function(configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listIssues(subjectName: string, page?: number, size?: number, labelSelector?: Array<string>, fieldSelector?: Array<string>, sort?: Array<string>, keyword?: string, ownerName?: string, label?: string, startDate?: string, endDate?: string, approved?: boolean, issueTemplate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListedIssueList>> {
+        async listIssues(subjectName?: string, page?: number, size?: number, labelSelector?: Array<string>, fieldSelector?: Array<string>, sort?: Array<string>, keyword?: string, ownerName?: string, label?: string, startDate?: string, endDate?: string, approved?: boolean, issueTemplate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListedIssueList>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listIssues(subjectName, page, size, labelSelector, fieldSelector, sort, keyword, ownerName, label, startDate, endDate, approved, issueTemplate, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApi.listIssues']?.[localVarOperationServerIndex]?.url;
@@ -715,7 +713,7 @@ export interface ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApiListIssuesRequest {
      * @type {string}
      * @memberof ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApiListIssues
      */
-    readonly subjectName: string
+    readonly subjectName?: string
 
     /**
      * Page number. Default is 0.
@@ -946,4 +944,3 @@ export class ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApi extends BaseAPI {
         return ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApiFp(this.configuration).updateIssueStatus(requestParameters.issueStatusChangeParam, options).then((request) => request(this.axios, this.basePath));
     }
 }
-

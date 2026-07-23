@@ -218,22 +218,17 @@ public class IssueServiceImpl implements IssueService {
         var issueAnnotations = nullSafeAnnotations(issue);
         var newIssueNotified = issueAnnotations.getOrDefault(Constant.CLOSED_ISSUE_NOTIFIED_ANNO,"false");
         if (Objects.equals(newIssueNotified,"false")) {
-            Set<String> issueWatchers = new HashSet<>(issue.getSpec().getAssignees());
+            Set<String> issueWatchers = new HashSet<>();
+            if (issue.getSpec().getAssignees() != null) {
+                issueWatchers.addAll(issue.getSpec().getAssignees());
+            }
             issueWatchers.add(issue.getSpec().getOwner());
-            return client.fetch(IssueSubject.class, issue.getSpec().getSubjectName())
-                .map(issueSubject -> {
-                    String issueSubjectTypeName = IssueSubject.parseSubjectType(issueSubject.getSpec()
-                        .getSubjectType());
-                    return IssueSubjectInfo.builder()
-                       .subjectDisplayName(issueSubject.getSpec().getDisplayName())
-                       .subjectType(issueSubjectTypeName)
-                        .build();
-                }).flatMap(issueSubjectInfo -> {
-                    //添加已经通知的标识
-                    issueAnnotations.put(Constant.CLOSED_ISSUE_NOTIFIED_ANNO, "true");
-                    return client.update(issue).flatMap(updatedIssue ->this.sendClosedIssueNotification(updatedIssue, issueWatchers, issueSubjectInfo.subjectDisplayName,
-                        issueSubjectInfo.subjectType, closedComment, closedOwner).thenReturn(updatedIssue));
-                });
+            issueAnnotations.put(Constant.CLOSED_ISSUE_NOTIFIED_ANNO, "true");
+            return client.update(issue)
+                .flatMap(updatedIssue -> this.sendClosedIssueNotification(
+                        updatedIssue, issueWatchers, "全站 Issue", "Issue",
+                        closedComment, closedOwner)
+                    .thenReturn(updatedIssue));
         }
         return client.update(issue);
     }
@@ -340,7 +335,8 @@ public class IssueServiceImpl implements IssueService {
         if(approved){
             contentUrl = externalLinkProcessor.processLink(issue.getStatus().getPermalink());
         }else{
-            contentUrl = externalLinkProcessor.processLink("/console/issueSubject/issues?subjectName=" + issue.getSpec().getSubjectName() + "&approved=false");
+            contentUrl = externalLinkProcessor.processLink(
+                "/console/issues/list?approved=false");
         }
         return Flux.fromIterable(participateUsers).flatMap(participateUser -> {
             var reasonSubject = Reason.Subject.builder()
@@ -379,10 +375,6 @@ public class IssueServiceImpl implements IssueService {
     @Builder
     record IssueClosedReasonData(String issueTitle, String issueClosedTime, String closedComment, String issuePermalink, String issueOwner,String closedOwner,
                                  String receiveOwner, String subjectDisplayName, String subjectType) {
-    }
-
-    @Builder
-    record IssueSubjectInfo(String subjectDisplayName, String subjectType){
     }
 
 }

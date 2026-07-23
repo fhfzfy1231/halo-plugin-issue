@@ -7,8 +7,8 @@ content = ~{::content}, version = ${pluginVersion}, head = ~{::head} )}">
     </th:block>
 </th:block>
 <th:block th:fragment="content" th:with="currentUser = ${contributorFinder.getContributor(#authentication.name)}">
-    <th:block th:replace="~{fragments/header::header(subjectType = ${issueSubjectInfo.subjectType}, title = ${issueSubjectInfo.title}, name = ${issueSubjectInfo.name},
-    totalIssue = ${issueSubjectStats.awaitIssue + issueSubjectStats.progressIssue}, activeTab = 'issues' )}" />
+    <th:block th:replace="~{fragments/global-header::header(
+        totalIssue = ${issueStats.totalIssue}, activeTab = 'issues')}" />
     <main class="piw-container piw-mx-auto piw-py-6 piw-space-y-4" x-data="diceBearAvatar(avatarStyle,size)">
         <div class="piw-w-full piw-flex piw-items-center piw-flex-wrap piw-justify-between piw-gap-x-3 piw-pb-3 piw-border-b piw-border-slate-300"
              x-data="{issueTemplateModal: false}">
@@ -26,12 +26,12 @@ content = ~{::content}, version = ${pluginVersion}, head = ~{::head} )}">
                     </th:block>
                 </th:block>
             </div>
-            <a th:if="${ #lists.isEmpty(issueSubjectInfo.issueTemplates) }" th:href="${'/subject/' + issueSubjectInfo.name + '/issues/new'}"
+            <a th:if="${#lists.isEmpty(issueTemplates.issueTemplateOptions)}" href="/issues/new"
                class="piw-outline-none piw-inline-block piw-rounded-md piw-bg-green-700 piw-text-neutral-100 piw-w-[100px] piw-px-2 piw-h-8 piw-flex piw-justify-center piw-items-center"
                 >New issue</a>
-            <button th:unless="${ #lists.isEmpty(issueSubjectInfo.issueTemplates) }" class="piw-outline-none piw-rounded-md piw-bg-green-700 piw-text-neutral-100 piw-w-[100px] piw-px-2 piw-h-8 piw-flex piw-justify-center piw-items-center" @click="issueTemplateModal = true">New issue</button>
+            <button th:unless="${#lists.isEmpty(issueTemplates.issueTemplateOptions)}" class="piw-outline-none piw-rounded-md piw-bg-green-700 piw-text-neutral-100 piw-w-[100px] piw-px-2 piw-h-8 piw-flex piw-justify-center piw-items-center" @click="issueTemplateModal = true">New issue</button>
             <!-- 模版选择   -->
-            <th:block th:if="${ not #lists.isEmpty(issueSubjectInfo.issueTemplates)}">
+            <th:block th:if="${not #lists.isEmpty(issueTemplates.issueTemplateOptions)}">
                 <th:block th:replace="~{fragments/issue-template-select}" />
             </th:block>
         </div>

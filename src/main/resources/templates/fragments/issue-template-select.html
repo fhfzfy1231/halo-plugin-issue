@@ -31,12 +31,12 @@
                     </div>
 
                     <div class="piw-flex piw-flex-col piw-items-center piw-px-4 piw-pt-2 piw-pb-4 piw-divide-y piw-divide-slate-200">
-                        <th:block th:each="issueTemplateItem:${issueSubjectInfo.issueTemplates}">
-                            <a th:href="${'/subject/' + issueSubjectInfo.name + '/issues/new?template=' + issueTemplateItem.metadataName}"
+                        <th:block th:each="issueTemplateItem:${issueTemplates.issueTemplateOptions}">
+                            <a th:href="${'/issues/new?template=' + issueTemplateItem.value}"
                                class="piw-block piw-w-full piw-p-2 piw-flex piw-justify-between piw-items-center piw-rounded hover:piw-bg-slate-200/50 hover:piw-cursor-pointer piw-transition-all piw-duration-300">
                                 <div class="piw-space-y-0.5">
-                                    <p class="piw-text-sm piw-tracking-wider" th:text="${issueTemplateItem.templateName}"></p>
-                                    <p class="piw-text-xs piw-text-gray-500" th:text="${issueTemplateItem.description}"></p>
+                                    <p class="piw-text-sm piw-tracking-wider" th:text="${issueTemplateItem.label}"></p>
+                                    <p class="piw-text-xs piw-text-gray-500">使用此模板创建 Issue</p>
                                 </div>
                                 <div class="piw-size-7 piw-rounded-full piw-inline-flex piw-items-center piw-justify-center">
                                     <span class="piw-icon-[tabler--arrow-right] piw-text-xl piw-text-gray-600"></span>

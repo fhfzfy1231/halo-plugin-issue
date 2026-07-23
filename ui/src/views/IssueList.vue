@@ -47,9 +47,6 @@ const selectedApprovedStatus = useRouteQuery<
   },
 });
 
-// 旧接口仍保留 subjectName 参数，空值表示查询全部 Issue。
-const currentIssueSubjectName = ref("");
-
 const hasFilters = computed(() => {
   return (
     selectedApprovedStatus.value == true ||
@@ -99,7 +96,6 @@ const endDate = computed(() => {
 const { issues, isLoading, isFetching, refetch, total } = useIssueListFetch(
   page,
   size,
-  currentIssueSubjectName,
   keyword,
   selectedSort,
   ownerName,

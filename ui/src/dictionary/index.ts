@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import type {
   IssueLabelSpecScopeEnum,
+  IssueTemplateSpecScopeEnum,
   IssueSubjectSpecSubjectTypeEnum,
 } from "@/api/generated";
 
@@ -85,12 +86,12 @@ const labelScopeTypeOptions = ref<
 const templateScopeTypeOptions = ref<
   Array<{
     label: string | undefined;
-    value: IssueLabelSpecScopeEnum | undefined;
+    value: IssueTemplateSpecScopeEnum | undefined;
   }>
 >([
   {
-    label: "默认",
-    value: undefined,
+    label: "全局",
+    value: "GLOBAL",
   },
   {
     label: "特定主体类型",

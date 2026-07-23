@@ -43,7 +43,6 @@ const emit = defineEmits<{
   (event: "update", issueMessage: Issue): void;
 }>();
 
-const currentIssueSubjectName = ref("");
 const issueTemplateFilterOptions = ref<Array<IssueTemplateItem>>([]);
 
 const isUpdateMode = computed(
@@ -71,7 +70,7 @@ const initIssue: Issue = {
     closedAt: "",
     approved: true,
     approvedTime: "",
-    subjectName: currentIssueSubjectName.value,
+    subjectName: "",
     top: false,
     issueTemplate: "",
   },

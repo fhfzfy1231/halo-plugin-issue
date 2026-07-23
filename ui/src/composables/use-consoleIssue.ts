@@ -15,7 +15,6 @@ import type {
 export function useIssueListFetch(
   page: Ref<number>,
   size: Ref<number>,
-  subjectName: Ref<string>,
   keyword?: Ref<string>,
   selectedSort?: Ref<string | undefined>,
   ownerName?: Ref<string | undefined>,
@@ -36,7 +35,6 @@ export function useIssueListFetch(
       "issues",
       page,
       size,
-      subjectName,
       keyword,
       selectedSort,
       ownerName,
@@ -48,7 +46,6 @@ export function useIssueListFetch(
     ],
     queryFn: async () => {
       const { data } = await consoleIssueApiClient.issue.listIssues({
-        subjectName: subjectName.value,
         page: page.value,
         size: size.value,
         keyword: keyword?.value,

@@ -125,7 +125,17 @@ function handleRouteToUserDetail() {}
       <VEntityField>
         <template #description>
           <VTag
-            v-if="issueTemplate.issueTemplate.spec?.scope == 'SUBJECT_TYPE'"
+            v-if="issueTemplate.issueTemplate.spec?.scope == 'GLOBAL'"
+            theme="primary"
+            class="cursor-auto"
+          >
+            <template #leftIcon>
+              <TablerCategoryFilled />
+            </template>
+            全局模版
+          </VTag>
+          <VTag
+            v-else-if="issueTemplate.issueTemplate.spec?.scope == 'SUBJECT_TYPE'"
             theme="primary"
             class="cursor-auto"
           >

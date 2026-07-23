@@ -53,7 +53,8 @@ public class IssueDocumentConverter implements Converter<Issue, Mono<HaloDocumen
         haloDoc.setOwnerName(issue.getSpec().getOwner());
         haloDoc.setUpdateTimestamp(issue.getSpec().getReleaseTime());
         haloDoc.setCreationTimestamp(issue.getMetadata().getCreationTimestamp());
-        haloDoc.setPermalink(String.valueOf(externalUrlSupplier.get().resolve(issue.getStatus().getPermalink())));
+        haloDoc.setPermalink(String.valueOf(externalUrlSupplier.get()
+            .resolve("/issues/" + issue.getMetadata().getName())));
         haloDoc.setPublished(true);
 
         Mono<List<String>> labelNamesMono = Mono.justOrEmpty(issue.getSpec().getLabels())

@@ -95,6 +95,7 @@ public class IssueTemplate extends AbstractExtension {
     }
 
     public enum IssueTemplateScope{
+        GLOBAL, // 全局
         SUBJECT_TYPE, // 特定主体类型
         SUBJECT, // 特定主体
     }

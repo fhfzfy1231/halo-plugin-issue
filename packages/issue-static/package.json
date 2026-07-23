@@ -17,6 +17,7 @@
     "name": "Akagi_Zen",
     "url": "https://github.com/fhfzfy1231"
   },
+  "packageManager": "pnpm@10.12.4",
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite build --watch",

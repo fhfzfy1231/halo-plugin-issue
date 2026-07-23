@@ -4,9 +4,17 @@
 
 Issue、模板和标签统一收纳在 Console 侧栏的 `Issue` 折叠菜单中。
 
+访客可直接访问：
+
+```text
+https://你的域名/issues
+```
+
 ## 功能
 
 - Console 侧栏提供 `Issue` 父级菜单，展开后可进入 `Issue 列表`、`Issue 模板` 和 `Issue 标签`。
+- 提供独立的 Issue 前台列表、分页、搜索、新建、详情和评论页面。
+- 前台固定入口为 `/issues`，Issue 详情地址为 `/issues/{Issue名称}`。
 - Issue 列表显示全部 Issue，不要求先选择主体。
 - 点击“查看内容”可查看 Issue 正文、状态、作者、标签和评论。
 - 拥有 Issue 管理权限的用户可在列表中直接勾选或移除标签，操作方式接近 GitHub Issues。
@@ -31,6 +39,9 @@ cd ..
 ```
 
 构建完成后，插件 JAR 位于 `build/libs/`。
+
+`packages/issue-static` 是访客端资源源码。如修改前台脚本或样式，需要先在该目录执行构建，并将生成资源同步到
+`src/main/resources/static/webAssets/`。
 
 ## 安装
 
