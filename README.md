@@ -2,11 +2,11 @@
 
 面向 Halo 2 的独立 Issue 管理插件。
 
-Issue、模板和标签均可从独立的同级菜单进入，不依赖“依托主体”。
+Issue、模板和标签统一收纳在 Console 侧栏的 `Issue` 折叠菜单中。
 
 ## 功能
 
-- Console 侧栏提供 `Issue 列表`、`Issue 模板`、`Issue 标签` 三个同级入口。
+- Console 侧栏提供 `Issue` 父级菜单，展开后可进入 `Issue 列表`、`Issue 模板` 和 `Issue 标签`。
 - Issue 列表显示全部 Issue，不要求先选择主体。
 - 点击“查看内容”可查看 Issue 正文、状态、作者、标签和评论。
 - 拥有 Issue 管理权限的用户可在列表中直接勾选或移除标签，操作方式接近 GitHub Issues。

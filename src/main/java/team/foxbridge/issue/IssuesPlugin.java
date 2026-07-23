@@ -3,6 +3,7 @@ package team.foxbridge.issue;
 import team.foxbridge.issue.extension.IssueComment;
 import team.foxbridge.issue.extension.Issue;
 import team.foxbridge.issue.extension.IssueLabel;
+import team.foxbridge.issue.extension.IssueSubject;
 import team.foxbridge.issue.extension.IssueTemplate;
 import org.springframework.stereotype.Component;
 import run.halo.app.extension.SchemeManager;
@@ -29,6 +30,28 @@ public class IssuesPlugin extends BasePlugin {
 
     @Override
     public void start() {
+        schemeManager.register(IssueSubject.class, indexSpecs -> {
+            indexSpecs.add(IndexSpecs.<IssueSubject, String>single("spec.displayName", String.class)
+                .indexFunc(issueSubject -> issueSubject.getSpec().getDisplayName()));
+            indexSpecs.add(IndexSpecs.<IssueSubject, String>single("spec.description", String.class)
+                .indexFunc(issueSubject -> issueSubject.getSpec().getDescription()));
+            indexSpecs.add(IndexSpecs.<IssueSubject, String>single("spec.subjectType", String.class)
+                .indexFunc(issueSubject -> Optional.ofNullable(issueSubject.getSpec().getSubjectType())
+                    .map(Enum::name)
+                    .orElse(null)));
+            indexSpecs.add(IndexSpecs.<IssueSubject, String>single("spec.subjectVisible", String.class)
+                .indexFunc(issueSubject -> Optional.ofNullable(issueSubject.getSpec().getSubjectVisible())
+                    .map(Enum::name)
+                    .orElse(null)));
+            indexSpecs.add(IndexSpecs.<IssueSubject, String>single("spec.owner", String.class)
+                .indexFunc(issueSubject -> issueSubject.getSpec().getOwner()));
+            indexSpecs.add(IndexSpecs.<IssueSubject, String>multi("spec.issueTemplates", String.class)
+                .indexFunc(issueSubject -> {
+                    var templates = issueSubject.getSpec().getIssueTemplates();
+                    return templates == null ? Set.of() : templates;
+                }));
+        });
+
         schemeManager.register(IssueLabel.class, indexSpecs -> {
             indexSpecs.add(IndexSpecs.<IssueLabel, String>single("spec.labelName", String.class)
                 .indexFunc(issueLabel -> issueLabel.getSpec().getLabelName()));
@@ -130,6 +153,7 @@ public class IssuesPlugin extends BasePlugin {
 
     @Override
     public void stop() {
+        schemeManager.unregister(schemeManager.get(IssueSubject.class));
         schemeManager.unregister(schemeManager.get(IssueLabel.class));
         schemeManager.unregister(schemeManager.get(IssueComment.class));
         schemeManager.unregister(schemeManager.get(IssueTemplate.class));

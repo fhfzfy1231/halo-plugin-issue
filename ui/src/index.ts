@@ -3,6 +3,7 @@ import PajamasIssueTypeObjective from "~icons/pajamas/issue-type-objective";
 import FluentMailTemplate20Regular from "~icons/fluent/mail-template-20-regular";
 import PepiconsPrintLabelCircle from "~icons/pepicons-print/label-circle";
 import { markRaw } from "vue";
+import { RouterView } from "vue-router";
 import IssueList from "@/views/IssueList.vue";
 import IssueTemplateList from "@/views/IssueTemplateList.vue";
 import IssueTemplateEditor from "@/views/IssueTemplateEditor.vue";
@@ -17,68 +18,81 @@ export default definePlugin({
       parentName: "Root",
       route: {
         path: "/issues",
-        name: "Issue",
-        component: IssueList,
+        name: "IssueRoot",
+        component: RouterView,
         meta: {
-          title: "Issue 列表",
-          searchable: true,
+          title: "Issue",
           mobile: true,
-          permissions: ["plugin:issues:manage"],
+          permissions: [
+            "plugin:issues:manage",
+            "plugin:issueTemplates:manage",
+            "plugin:issue:labels:manage",
+          ],
           menu: {
-            name: "Issue 列表",
+            name: "Issue",
             group: "content",
             icon: markRaw(PajamasIssueTypeObjective),
             mobile: true,
           },
         },
-      },
-    },
-    {
-      parentName: "Root",
-      route: {
-        path: "/issue-templates",
-        name: "IssueTemplate",
-        component: IssueTemplateList,
-        meta: {
-          title: "Issue 模板",
-          searchable: true,
-          permissions: ["plugin:issueTemplates:manage"],
-          menu: {
-            name: "Issue 模板",
-            group: "content",
-            icon: markRaw(FluentMailTemplate20Regular),
+        children: [
+          {
+            path: "",
+            name: "Issue",
+            component: IssueList,
+            meta: {
+              title: "Issue 列表",
+              searchable: true,
+              mobile: true,
+              permissions: ["plugin:issues:manage"],
+              menu: {
+                name: "Issue 列表",
+                icon: markRaw(PajamasIssueTypeObjective),
+                mobile: true,
+                priority: 0,
+              },
+            },
           },
-        },
-      },
-    },
-    {
-      parentName: "Root",
-      route: {
-        path: "/issue-templates/editor",
-        name: "IssueTemplateEditor",
-        component: IssueTemplateEditor,
-        meta: {
-          title: "编辑 Issue 模板",
-          permissions: ["plugin:issueTemplates:manage"],
-        },
-      },
-    },
-    {
-      parentName: "Root",
-      route: {
-        path: "/issue-labels",
-        name: "IssueLabel",
-        component: IssueLabelList,
-        meta: {
-          title: "Issue 标签",
-          searchable: true,
-          permissions: ["plugin:issue:labels:manage"],
-          menu: {
-            name: "Issue 标签",
-            group: "content",
-            icon: markRaw(PepiconsPrintLabelCircle),
+          {
+            path: "/issue-templates",
+            name: "IssueTemplate",
+            component: IssueTemplateList,
+            meta: {
+              title: "Issue 模板",
+              searchable: true,
+              permissions: ["plugin:issueTemplates:manage"],
+              menu: {
+                name: "Issue 模板",
+                icon: markRaw(FluentMailTemplate20Regular),
+                priority: 10,
+              },
+            },
           },
-        },
+          {
+            path: "/issue-templates/editor",
+            name: "IssueTemplateEditor",
+            component: IssueTemplateEditor,
+            meta: {
+              title: "编辑 Issue 模板",
+              permissions: ["plugin:issueTemplates:manage"],
+            },
+          },
+          {
+            path: "/issue-labels",
+            name: "IssueLabel",
+            component: IssueLabelList,
+            meta: {
+              title: "Issue 标签",
+              searchable: true,
+              permissions: ["plugin:issue:labels:manage"],
+              menu: {
+                name: "Issue 标签",
+                icon: markRaw(PepiconsPrintLabelCircle),
+                priority: 20,
+              },
+            },
+          },
+        ],
       },
     },
   ],
