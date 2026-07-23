@@ -51,7 +51,7 @@ const isUpdateMode = computed(
 );
 const initIssue: Issue = {
   kind: "Issue",
-  apiVersion: "issue.webjing.com/v1alpha1",
+  apiVersion: "issue.foxbridge.team/v1alpha1",
   metadata: {
     generateName: "issue-",
     name: "",
@@ -485,7 +485,7 @@ const handleReset = () => {
           ref="annotationsFormRef"
           :value="formState.metadata.annotations"
           kind="Issue"
-          group="issue.webjing.com"
+          group="issue.foxbridge.team"
         />
       </div>
     </div>

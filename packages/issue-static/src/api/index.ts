@@ -7,7 +7,7 @@ export function searchIssue(keywordStr: string) {
     let param = {
         highlightPostTag: "</mark>",
         highlightPreTag :  "<mark>",
-        includeTypes: ["issue.issue.webjing.com"],
+        includeTypes: ["issue.issue.foxbridge.team"],
         keyword: keywordStr,
         limit: 20
     }

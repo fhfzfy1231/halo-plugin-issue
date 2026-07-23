@@ -42,7 +42,7 @@ const subjectOptions = ref<Array<{ label: string | undefined; value: string }>>(
 
 const initIssueLabel: IssueLabel = {
   kind: "IssueLabel",
-  apiVersion: "issue.webjing.com/v1alpha1",
+  apiVersion: "issue.foxbridge.team/v1alpha1",
   metadata: {
     generateName: "label-",
     name: "",
@@ -244,7 +244,7 @@ const handleReset = () => {
           ref="annotationsFormRef"
           :value="formState.metadata.annotations"
           kind="IssueLabel"
-          group="issue.webjing.com"
+          group="issue.foxbridge.team"
         />
       </div>
     </div>

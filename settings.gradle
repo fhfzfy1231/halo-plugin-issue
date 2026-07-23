@@ -3,5 +3,5 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = 'plugin-issues'
+rootProject.name = 'halo-plugin-issue'
 include 'ui'

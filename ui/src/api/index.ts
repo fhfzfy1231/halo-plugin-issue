@@ -1,17 +1,17 @@
 import { axiosInstance } from "@halo-dev/api-client";
 import {
   IssueSubjectV1alpha1Api,
-  ConsoleApiIssueSubjectWebjingComV1alpha1IssueSubjectApi,
+  ConsoleApiIssueSubjectFoxbridgeTeamV1alpha1IssueSubjectApi,
   IssueV1alpha1Api,
-  ConsoleApiIssueWebjingComV1alpha1IssueApi,
-  UcApiIssueWebjingComV1alpha1IssueApi,
+  ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApi,
+  UcApiIssueFoxbridgeTeamV1alpha1IssueApi,
   IssueCommentV1alpha1Api,
-  ConsoleApiIssueCommentWebjingComV1alpha1IssueApi,
-  UcApiIssueCommentWebjingComV1alpha1IssueCommentApi,
+  ConsoleApiIssueCommentFoxbridgeTeamV1alpha1IssueApi,
+  UcApiIssueCommentFoxbridgeTeamV1alpha1IssueCommentApi,
   IssueTemplateV1alpha1Api,
-  ConsoleApiIssueTemplateWebjingComV1alpha1IssueTemplateApi,
+  ConsoleApiIssueTemplateFoxbridgeTeamV1alpha1IssueTemplateApi,
   IssueLabelV1alpha1Api,
-  ConsoleApiIssueLabelWebjingComV1alpha1IssueLabelApi
+  ConsoleApiIssueLabelFoxbridgeTeamV1alpha1IssueLabelApi
 } from "./generated";
 
 const issueSubjectApiClient = {
@@ -19,7 +19,7 @@ const issueSubjectApiClient = {
 };
 
 const consoleIssueSubjectApiClient = {
-  issueSubject: new ConsoleApiIssueSubjectWebjingComV1alpha1IssueSubjectApi(undefined, "", axiosInstance),
+  issueSubject: new ConsoleApiIssueSubjectFoxbridgeTeamV1alpha1IssueSubjectApi(undefined, "", axiosInstance),
 };
 
 const issueApiClient = {
@@ -32,11 +32,11 @@ const issueCommentApiClient = {
 };
 
 const consoleIssueCommentApiClient = {
-  issueComment: new ConsoleApiIssueCommentWebjingComV1alpha1IssueApi(undefined, "", axiosInstance),
+  issueComment: new ConsoleApiIssueCommentFoxbridgeTeamV1alpha1IssueApi(undefined, "", axiosInstance),
 };
 
 const ucIssueCommentApiClient = {
-  issueComment: new UcApiIssueCommentWebjingComV1alpha1IssueCommentApi(undefined, "", axiosInstance),
+  issueComment: new UcApiIssueCommentFoxbridgeTeamV1alpha1IssueCommentApi(undefined, "", axiosInstance),
 };
 
 const issueTemplateApiClient = {
@@ -44,15 +44,15 @@ const issueTemplateApiClient = {
 };
 
 const consoleIssueTemplateApiClient = {
-  issueTemplate: new ConsoleApiIssueTemplateWebjingComV1alpha1IssueTemplateApi(undefined, "", axiosInstance),
+  issueTemplate: new ConsoleApiIssueTemplateFoxbridgeTeamV1alpha1IssueTemplateApi(undefined, "", axiosInstance),
 };
 
 const consoleIssueApiClient = {
-  issue: new ConsoleApiIssueWebjingComV1alpha1IssueApi(undefined, "", axiosInstance),
+  issue: new ConsoleApiIssueFoxbridgeTeamV1alpha1IssueApi(undefined, "", axiosInstance),
 };
 
 const ucIssueApiClient = {
-  issue: new UcApiIssueWebjingComV1alpha1IssueApi(undefined, "", axiosInstance),
+  issue: new UcApiIssueFoxbridgeTeamV1alpha1IssueApi(undefined, "", axiosInstance),
 };
 
 const issueLabelApiClient = {
@@ -60,7 +60,7 @@ const issueLabelApiClient = {
 };
 
 const consoleIssueLabelApiClient = {
-  issueLabel: new ConsoleApiIssueLabelWebjingComV1alpha1IssueLabelApi(undefined, "", axiosInstance),
+  issueLabel: new ConsoleApiIssueLabelFoxbridgeTeamV1alpha1IssueLabelApi(undefined, "", axiosInstance),
 };
 
 export {

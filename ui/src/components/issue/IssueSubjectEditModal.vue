@@ -47,7 +47,7 @@ const attachmentSelectorModal = ref(false);
 
 const initIssueSubject: IssueSubject = {
   kind: "IssueSubject",
-  apiVersion: "issue.webjing.com/v1alpha1",
+  apiVersion: "issue.foxbridge.team/v1alpha1",
   metadata: {
     generateName: "subject-",
     name: "",
@@ -322,7 +322,7 @@ const onAttachmentsSelect = async (attachments: AttachmentLike[]) => {
           ref="annotationsFormRef"
           :value="formState.metadata.annotations"
           kind="IssueSubject"
-          group="issue.webjing.com"
+          group="issue.foxbridge.team"
         />
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 面向 Halo 2 的独立 Issue 管理插件。
 
-本项目基于 `wenjing-xin/plugin-issues` 改造，不再通过 Console 暴露“依托主体”功能。Issue、模板和标签均可从独立的同级菜单进入。
+Issue、模板和标签均可从独立的同级菜单进入，不依赖“依托主体”。
 
 ## 功能
 
@@ -41,5 +41,3 @@ cd ..
 - 作者：[Akagi_Zen](https://github.com/fhfzfy1231)
 - 仓库：`fhfzfy1231/halo-plugin-issue`
 - 许可证：GPL-3.0
-
-本项目保留原项目 GPL-3.0 许可证及其版权信息。

@@ -1,7 +1,7 @@
 apiVersion: v1alpha1
 kind: Setting
 metadata:
-  name: plugin-issues-settings
+  name: halo-plugin-issue-settings
 spec:
   forms:
     - group: issuesBasic

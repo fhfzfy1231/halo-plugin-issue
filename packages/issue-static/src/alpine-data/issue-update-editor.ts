@@ -21,7 +21,7 @@ export default (isCommentEdit:boolean, editId:string) => ({
     // issue评论结构数据
     issueCommentEditForm: {
         kind: "IssueComment",
-        apiVersion: "issue.webjing.com/v1alpha1",
+        apiVersion: "issue.foxbridge.team/v1alpha1",
         metadata: {
             name: "",
             generateName: "ic-"
@@ -45,7 +45,7 @@ export default (isCommentEdit:boolean, editId:string) => ({
 
     issueEditForm: {
         kind: "Issue",
-        apiVersion: "issue.webjing.com/v1alpha1",
+        apiVersion: "issue.foxbridge.team/v1alpha1",
         metadata: {
             name: "",
             generateName: "issue-",
@@ -505,7 +505,7 @@ export default (isCommentEdit:boolean, editId:string) => ({
         if(isCommentEdit) {
             this.issueCommentEditForm = {
                 kind: "IssueComment",
-                apiVersion: "issue.webjing.com/v1alpha1",
+                apiVersion: "issue.foxbridge.team/v1alpha1",
                 metadata: {
                     name: "",
                     generateName: "ic-"
@@ -529,7 +529,7 @@ export default (isCommentEdit:boolean, editId:string) => ({
         }else {
             this.issueEditForm = {
                 kind: "Issue",
-                apiVersion: "issue.webjing.com/v1alpha1",
+                apiVersion: "issue.foxbridge.team/v1alpha1",
                 metadata: {
                     name: "",
                     generateName: "issue-",

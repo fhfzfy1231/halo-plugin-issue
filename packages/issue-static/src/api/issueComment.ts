@@ -1,7 +1,7 @@
 import { IssueComment } from "../types";
 import { axiosInstance } from "@halo-dev/api-client";
 
-const apiVersion = "/apis/uc.api.issueComment.webjing.com/v1alpha1";
+const apiVersion = "/apis/uc.api.issueComment.foxbridge.team/v1alpha1";
 
 export function createIssueComment(issueComment:IssueComment) {
     const urlPath = `${apiVersion}/issuecomments`;

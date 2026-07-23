@@ -8,7 +8,7 @@ export default (subjectName: string, templateName: string) => ({
 
     issueForm: {
         kind: "Issue",
-        apiVersion: "issue.webjing.com/v1alpha1",
+        apiVersion: "issue.foxbridge.team/v1alpha1",
         metadata: {
             name: "",
             generateName: "issue-",
@@ -78,7 +78,7 @@ export default (subjectName: string, templateName: string) => ({
             // 置空issue
             this.issueForm = {
                 kind: "Issue",
-                apiVersion: "issue.webjing.com/v1alpha1",
+                apiVersion: "issue.foxbridge.team/v1alpha1",
                 metadata: {
                     name: "",
                     generateName: "issue-"

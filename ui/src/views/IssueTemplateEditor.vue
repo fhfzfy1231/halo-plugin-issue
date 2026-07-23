@@ -55,7 +55,7 @@ interface Component {
 
 const router = useRouter();
 const initIssueTemplate = ref<IssueTemplate>({
-  apiVersion: "issue.webjing.com/v1alpha1",
+  apiVersion: "issue.foxbridge.team/v1alpha1",
   kind: "IssueTemplate",
   metadata: {
     generateName: "template-",

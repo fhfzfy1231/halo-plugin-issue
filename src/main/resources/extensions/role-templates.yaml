@@ -10,13 +10,13 @@ metadata:
     rbac.authorization.halo.run/ui-permissions: |
       ["plugin:issues:view"]
 rules:
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issues"]
     verbs: ["get", "list"]
-  - apiGroups: ["console.api.issue.webjing.com"]
+  - apiGroups: ["console.api.issue.foxbridge.team"]
     resources: ["issues", "labels"]
     verbs: ["get", "list"]
-  - apiGroups: [ "uc.api.issue.webjing.com" ]
+  - apiGroups: [ "uc.api.issue.foxbridge.team" ]
     resources: [ "issues", "labels", "issuetemplates" ]
     verbs: [ "get", "list" ]
 ---
@@ -34,19 +34,19 @@ metadata:
     rbac.authorization.halo.run/dependencies: |
       ["role-template-issues-view", "role-template-issue-labels-view"]
 rules:
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issues"]
     verbs: ["create", "patch", "update", "delete", "deletecollection"]
-  - apiGroups: ["console.api.issue.webjing.com"]
+  - apiGroups: ["console.api.issue.foxbridge.team"]
     resources: ["issues", "labels", "issuestatus"]
     verbs: ["create", "patch", "update", "delete", "deletecollection"]
-  - apiGroups: [ "uc.api.issue.webjing.com" ]
+  - apiGroups: [ "uc.api.issue.foxbridge.team" ]
     resources: [ "issues", "labels", "issuetemplates", "issuestatus" ]
     verbs: [ "create", "update", "patch" ]
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issuelabels"]
     verbs: ["get", "list"]
-  - apiGroups: ["console.api.issueLabel.webjing.com"]
+  - apiGroups: ["console.api.issueLabel.foxbridge.team"]
     resources: ["issuelabels"]
     verbs: ["get", "list"]
 ---
@@ -64,7 +64,7 @@ metadata:
     rbac.authorization.halo.run/dependencies: |
       ["role-template-issues-view"]
 rules:
-  - apiGroups: ["uc.api.issue.webjing.com"]
+  - apiGroups: ["uc.api.issue.foxbridge.team"]
     resources: ["issues", "labels", "issuetemplates", "issuestatus"]
     verbs: [ "create", "patch", "update"]
 ---
@@ -80,7 +80,7 @@ metadata:
     rbac.authorization.halo.run/ui-permissions: |
       ["uc:plugin:issues:delete"]
 rules:
-  - apiGroups: ["uc.api.issue.webjing.com"]
+  - apiGroups: ["uc.api.issue.foxbridge.team"]
     resources: ["issues", "labels"]
     verbs: ["delete", "deletecollection"]
 ---
@@ -96,10 +96,10 @@ metadata:
     rbac.authorization.halo.run/ui-permissions: |
       ["plugin:issues:comment:view"]
 rules:
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issuecomments"]
     verbs: ["get", "list"]
-  - apiGroups: ["console.api.issueComment.webjing.com"]
+  - apiGroups: ["console.api.issueComment.foxbridge.team"]
     resources: ["issuecomments"]
     verbs: ["get", "list"]
 ---
@@ -117,10 +117,10 @@ metadata:
     rbac.authorization.halo.run/dependencies: |
       ["role-template-issues-comment-view"]
 rules:
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issuecomments"]
     verbs: ["create", "patch", "update", "delete", "deletecollection"]
-  - apiGroups: ["console.api.issueComment.webjing.com"]
+  - apiGroups: ["console.api.issueComment.foxbridge.team"]
     resources: ["issuecomments"]
     verbs: ["create", "patch", "update", "delete", "deletecollection"]
 ---
@@ -138,7 +138,7 @@ metadata:
     rbac.authorization.halo.run/dependencies: |
       ["role-template-issues-comment-view"]
 rules:
-  - apiGroups: ["uc.api.issueComment.webjing.com"]
+  - apiGroups: ["uc.api.issueComment.foxbridge.team"]
     resources: ["issuecomments"]
     verbs: ["get", "list", "create", "update"]
 ---
@@ -154,7 +154,7 @@ metadata:
     rbac.authorization.halo.run/ui-permissions: |
       ["uc:plugin:issues:comment:delete"]
 rules:
-  - apiGroups: ["uc.api.issueComment.webjing.com"]
+  - apiGroups: ["uc.api.issueComment.foxbridge.team"]
     resources: ["issuecomments"]
     verbs: ["delete", "deletecollection"]
 ---
@@ -199,10 +199,10 @@ metadata:
     rbac.authorization.halo.run/ui-permissions: |
       ["plugin:issueTemplates:view"]
 rules:
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issuetemplates"]
     verbs: ["get", "list"]
-  - apiGroups: ["console.api.issueTemplate.webjing.com"]
+  - apiGroups: ["console.api.issueTemplate.foxbridge.team"]
     resources: ["issuetemplates" ]
     verbs: ["get", "list"]
 ---
@@ -220,10 +220,10 @@ metadata:
     rbac.authorization.halo.run/dependencies: |
       ["role-template-issues-template-view"]
 rules:
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issuetemplates"]
     verbs: ["create", "patch", "update", "delete", "deletecollection"]
-  - apiGroups: ["console.api.issueTemplate.webjing.com"]
+  - apiGroups: ["console.api.issueTemplate.foxbridge.team"]
     resources: ["issuetemplates"]
     verbs: ["create", "patch", "update", "delete", "deletecollection"]
 ---
@@ -239,10 +239,10 @@ metadata:
     rbac.authorization.halo.run/ui-permissions: |
       ["plugin:issue:labels:view"]
 rules:
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issuelabels"]
     verbs: ["get", "list"]
-  - apiGroups: [ "console.api.issueLabel.webjing.com" ]
+  - apiGroups: [ "console.api.issueLabel.foxbridge.team" ]
     resources: [ "issuelabels" ]
     verbs: [ "get", "list" ]
 ---
@@ -260,7 +260,7 @@ metadata:
     rbac.authorization.halo.run/dependencies: |
       ["role-template-issue-labels-view"]
 rules:
-  - apiGroups: ["issue.webjing.com"]
+  - apiGroups: ["issue.foxbridge.team"]
     resources: ["issuelabels"]
     verbs: ["create", "patch", "update", "delete", "deletecollection"]
 ---

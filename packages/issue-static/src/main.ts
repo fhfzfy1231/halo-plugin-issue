@@ -95,7 +95,7 @@ export function publishIssueComment(issueId: string, rawContent: string, htmlCon
     }
     let initComment: IssueComment = {
         kind: "IssueComment",
-        apiVersion: "issue.webjing.com/v1alpha1",
+        apiVersion: "issue.foxbridge.team/v1alpha1",
         metadata: {
             name: "",
             generateName: "ic-"

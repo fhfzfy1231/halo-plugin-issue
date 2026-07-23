@@ -13,7 +13,7 @@
     "bearerAuth" : [ ]
   } ],
   "paths" : {
-    "/apis/console.api.issue.webjing.com/v1alpha1/issues" : {
+    "/apis/console.api.issue.foxbridge.team/v1alpha1/issues" : {
       "get" : {
         "description" : "List issues.",
         "operationId" : "ListIssues",
@@ -135,7 +135,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issue.foxbridge.team/v1alpha1/Issue" ]
       },
       "post" : {
         "description" : "Create a Issue.",
@@ -162,7 +162,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issue.foxbridge.team/v1alpha1/Issue" ]
       },
       "put" : {
         "description" : "update a Issue.",
@@ -189,10 +189,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/console.api.issue.webjing.com/v1alpha1/issues/templateOptions/{subjectName}" : {
+    "/apis/console.api.issue.foxbridge.team/v1alpha1/issues/templateOptions/{subjectName}" : {
       "get" : {
         "description" : "Get a issue template options by subjectName.",
         "operationId" : "GetIssueSelectTemplateOptions",
@@ -217,10 +217,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/console.api.issue.webjing.com/v1alpha1/issues/{name}" : {
+    "/apis/console.api.issue.foxbridge.team/v1alpha1/issues/{name}" : {
       "delete" : {
         "description" : "Delete a Issue.",
         "operationId" : "DeleteIssue",
@@ -244,7 +244,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issue.foxbridge.team/v1alpha1/Issue" ]
       },
       "get" : {
         "description" : "Get a issue message by name.",
@@ -270,10 +270,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/console.api.issue.webjing.com/v1alpha1/issuestatus" : {
+    "/apis/console.api.issue.foxbridge.team/v1alpha1/issuestatus" : {
       "put" : {
         "description" : "Update a My Issue status.",
         "operationId" : "updateIssueStatus",
@@ -299,10 +299,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/console.api.issue.webjing.com/v1alpha1/labels" : {
+    "/apis/console.api.issue.foxbridge.team/v1alpha1/labels" : {
       "get" : {
         "description" : "List current issueSubject all issue labels.",
         "operationId" : "ListSubjectLabels",
@@ -336,10 +336,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/console.api.issueComment.webjing.com/v1alpha1/issuecomments" : {
+    "/apis/console.api.issueComment.foxbridge.team/v1alpha1/issuecomments" : {
       "get" : {
         "description" : "List current issues comment.",
         "operationId" : "ListIssuesComment",
@@ -424,7 +424,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueComment.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issueComment.foxbridge.team/v1alpha1/Issue" ]
       },
       "post" : {
         "description" : "Create a IssueComment.",
@@ -451,10 +451,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueComment.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "console.api.issueComment.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/console.api.issueLabel.webjing.com/v1alpha1/issuelabels" : {
+    "/apis/console.api.issueLabel.foxbridge.team/v1alpha1/issuelabels" : {
       "get" : {
         "description" : "List IssueLabels.",
         "operationId" : "ListIssueLabels",
@@ -547,7 +547,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueLabel.webjing.com/v1alpha1/IssueLabel" ]
+        "tags" : [ "console.api.issueLabel.foxbridge.team/v1alpha1/IssueLabel" ]
       },
       "post" : {
         "description" : "Create a issue label.",
@@ -574,10 +574,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueLabel.webjing.com/v1alpha1/IssueLabel" ]
+        "tags" : [ "console.api.issueLabel.foxbridge.team/v1alpha1/IssueLabel" ]
       }
     },
-    "/apis/console.api.issueLabel.webjing.com/v1alpha1/issuelabels/{subjectName}" : {
+    "/apis/console.api.issueLabel.foxbridge.team/v1alpha1/issuelabels/{subjectName}" : {
       "get" : {
         "description" : "List IssueLabels.",
         "operationId" : "ListSubjectIssueLabels",
@@ -609,10 +609,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueLabel.webjing.com/v1alpha1/IssueLabel" ]
+        "tags" : [ "console.api.issueLabel.foxbridge.team/v1alpha1/IssueLabel" ]
       }
     },
-    "/apis/console.api.issueSubject.webjing.com/v1alpha1/issuesubjects" : {
+    "/apis/console.api.issueSubject.foxbridge.team/v1alpha1/issuesubjects" : {
       "get" : {
         "description" : "List issueSubjects.",
         "operationId" : "ListIssueSubjects",
@@ -705,7 +705,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueSubject.webjing.com/v1alpha1/IssueSubject" ]
+        "tags" : [ "console.api.issueSubject.foxbridge.team/v1alpha1/IssueSubject" ]
       },
       "post" : {
         "description" : "create issue subject.",
@@ -732,7 +732,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueSubject.webjing.com/v1alpha1/IssueSubject" ]
+        "tags" : [ "console.api.issueSubject.foxbridge.team/v1alpha1/IssueSubject" ]
       },
       "put" : {
         "description" : "update issue subject.",
@@ -759,10 +759,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueSubject.webjing.com/v1alpha1/IssueSubject" ]
+        "tags" : [ "console.api.issueSubject.foxbridge.team/v1alpha1/IssueSubject" ]
       }
     },
-    "/apis/console.api.issueTemplate.webjing.com/v1alpha1/issuetemplates" : {
+    "/apis/console.api.issueTemplate.foxbridge.team/v1alpha1/issuetemplates" : {
       "get" : {
         "description" : "List issueTemplates.",
         "operationId" : "ListIssueTemplates",
@@ -862,7 +862,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueTemplate.webjing.com/v1alpha1/IssueTemplate" ]
+        "tags" : [ "console.api.issueTemplate.foxbridge.team/v1alpha1/IssueTemplate" ]
       },
       "post" : {
         "description" : "create issue template.",
@@ -889,10 +889,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueTemplate.webjing.com/v1alpha1/IssueTemplate" ]
+        "tags" : [ "console.api.issueTemplate.foxbridge.team/v1alpha1/IssueTemplate" ]
       }
     },
-    "/apis/console.api.issueTemplate.webjing.com/v1alpha1/issuetemplates/{subjectType}" : {
+    "/apis/console.api.issueTemplate.foxbridge.team/v1alpha1/issuetemplates/{subjectType}" : {
       "get" : {
         "description" : "List issueTemplate options.",
         "operationId" : "ListIssueTemplateOptions",
@@ -924,10 +924,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "console.api.issueTemplate.webjing.com/v1alpha1/IssueTemplate" ]
+        "tags" : [ "console.api.issueTemplate.foxbridge.team/v1alpha1/IssueTemplate" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issuecomments" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issuecomments" : {
       "get" : {
         "description" : "List IssueComment",
         "operationId" : "listIssueComment",
@@ -1020,7 +1020,7 @@
         "tags" : [ "IssueCommentV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issuecomments/{name}" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issuecomments/{name}" : {
       "delete" : {
         "description" : "Delete IssueComment",
         "operationId" : "deleteIssueComment",
@@ -1138,7 +1138,7 @@
         "tags" : [ "IssueCommentV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issuelabels" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issuelabels" : {
       "get" : {
         "description" : "List IssueLabel",
         "operationId" : "listIssueLabel",
@@ -1231,7 +1231,7 @@
         "tags" : [ "IssueLabelV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issuelabels/{name}" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issuelabels/{name}" : {
       "delete" : {
         "description" : "Delete IssueLabel",
         "operationId" : "deleteIssueLabel",
@@ -1349,7 +1349,7 @@
         "tags" : [ "IssueLabelV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issues" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issues" : {
       "get" : {
         "description" : "List Issue",
         "operationId" : "listIssue",
@@ -1442,7 +1442,7 @@
         "tags" : [ "IssueV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issues/{name}" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issues/{name}" : {
       "delete" : {
         "description" : "Delete Issue",
         "operationId" : "deleteIssue",
@@ -1560,7 +1560,7 @@
         "tags" : [ "IssueV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issuesubjects" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issuesubjects" : {
       "get" : {
         "description" : "List IssueSubject",
         "operationId" : "listIssueSubject",
@@ -1653,7 +1653,7 @@
         "tags" : [ "IssueSubjectV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issuesubjects/{name}" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issuesubjects/{name}" : {
       "delete" : {
         "description" : "Delete IssueSubject",
         "operationId" : "deleteIssueSubject",
@@ -1771,7 +1771,7 @@
         "tags" : [ "IssueSubjectV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issuetemplates" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issuetemplates" : {
       "get" : {
         "description" : "List IssueTemplate",
         "operationId" : "listIssueTemplate",
@@ -1864,7 +1864,7 @@
         "tags" : [ "IssueTemplateV1alpha1" ]
       }
     },
-    "/apis/issue.webjing.com/v1alpha1/issuetemplates/{name}" : {
+    "/apis/issue.foxbridge.team/v1alpha1/issuetemplates/{name}" : {
       "delete" : {
         "description" : "Delete IssueTemplate",
         "operationId" : "deleteIssueTemplate",
@@ -1982,7 +1982,7 @@
         "tags" : [ "IssueTemplateV1alpha1" ]
       }
     },
-    "/apis/uc.api.issue.webjing.com/v1alpha1/issues" : {
+    "/apis/uc.api.issue.foxbridge.team/v1alpha1/issues" : {
       "get" : {
         "description" : "List My issues.",
         "operationId" : "ListMyIssues",
@@ -2104,7 +2104,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       },
       "post" : {
         "description" : "Create a My Issue.",
@@ -2131,10 +2131,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/uc.api.issue.webjing.com/v1alpha1/issues/content" : {
+    "/apis/uc.api.issue.foxbridge.team/v1alpha1/issues/content" : {
       "get" : {
         "description" : "fetch issue content.",
         "operationId" : "FetchIssueContent",
@@ -2157,10 +2157,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/uc.api.issue.webjing.com/v1alpha1/issues/{name}" : {
+    "/apis/uc.api.issue.foxbridge.team/v1alpha1/issues/{name}" : {
       "delete" : {
         "description" : "Delete a My Issue.",
         "operationId" : "DeleteMyIssue",
@@ -2184,7 +2184,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       },
       "get" : {
         "description" : "Get a My Issue.",
@@ -2209,7 +2209,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       },
       "put" : {
         "description" : "Update a My Issue.",
@@ -2244,10 +2244,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/uc.api.issue.webjing.com/v1alpha1/issuestatus" : {
+    "/apis/uc.api.issue.foxbridge.team/v1alpha1/issuestatus" : {
       "put" : {
         "description" : "Update a My Issue status.",
         "operationId" : "UpdateMyIssueStatus",
@@ -2273,10 +2273,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/uc.api.issue.webjing.com/v1alpha1/issuetemplates/{templateName}" : {
+    "/apis/uc.api.issue.foxbridge.team/v1alpha1/issuetemplates/{templateName}" : {
       "get" : {
         "description" : "fetch issue template.",
         "operationId" : "FetchIssueTemplateData",
@@ -2300,10 +2300,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/uc.api.issue.webjing.com/v1alpha1/labels" : {
+    "/apis/uc.api.issue.foxbridge.team/v1alpha1/labels" : {
       "get" : {
         "description" : "List all issue labels.",
         "operationId" : "ListMyLabels",
@@ -2330,10 +2330,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issue.webjing.com/v1alpha1/Issue" ]
+        "tags" : [ "uc.api.issue.foxbridge.team/v1alpha1/Issue" ]
       }
     },
-    "/apis/uc.api.issueComment.webjing.com/v1alpha1/issuecomments" : {
+    "/apis/uc.api.issueComment.foxbridge.team/v1alpha1/issuecomments" : {
       "get" : {
         "description" : "List My issues comment.",
         "operationId" : "ListMyIssuesComment",
@@ -2418,7 +2418,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issueComment.webjing.com/v1alpha1/IssueComment" ]
+        "tags" : [ "uc.api.issueComment.foxbridge.team/v1alpha1/IssueComment" ]
       },
       "post" : {
         "description" : "Create a My IssueComment.",
@@ -2445,7 +2445,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issueComment.webjing.com/v1alpha1/IssueComment" ]
+        "tags" : [ "uc.api.issueComment.foxbridge.team/v1alpha1/IssueComment" ]
       },
       "put" : {
         "description" : "Update a My IssueComment.",
@@ -2472,10 +2472,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issueComment.webjing.com/v1alpha1/IssueComment" ]
+        "tags" : [ "uc.api.issueComment.foxbridge.team/v1alpha1/IssueComment" ]
       }
     },
-    "/apis/uc.api.issueComment.webjing.com/v1alpha1/issuecomments/content" : {
+    "/apis/uc.api.issueComment.foxbridge.team/v1alpha1/issuecomments/content" : {
       "get" : {
         "description" : "fetch issue comment content.",
         "operationId" : "FetchIssueCommentContent",
@@ -2499,10 +2499,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issueComment.webjing.com/v1alpha1/IssueComment" ]
+        "tags" : [ "uc.api.issueComment.foxbridge.team/v1alpha1/IssueComment" ]
       }
     },
-    "/apis/uc.api.issueComment.webjing.com/v1alpha1/issuecomments/{commentName}" : {
+    "/apis/uc.api.issueComment.foxbridge.team/v1alpha1/issuecomments/{commentName}" : {
       "get" : {
         "description" : "Get a My IssueComment.",
         "operationId" : "GetMyIssueComment",
@@ -2526,10 +2526,10 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issueComment.webjing.com/v1alpha1/IssueComment" ]
+        "tags" : [ "uc.api.issueComment.foxbridge.team/v1alpha1/IssueComment" ]
       }
     },
-    "/apis/uc.api.issueComment.webjing.com/v1alpha1/issuecomments/{name}" : {
+    "/apis/uc.api.issueComment.foxbridge.team/v1alpha1/issuecomments/{name}" : {
       "delete" : {
         "description" : "Delete a My Issue Comment.",
         "operationId" : "DeleteMyIssueComment",
@@ -2553,7 +2553,7 @@
             "description" : "default response"
           }
         },
-        "tags" : [ "uc.api.issueComment.webjing.com/v1alpha1/IssueComment" ]
+        "tags" : [ "uc.api.issueComment.foxbridge.team/v1alpha1/IssueComment" ]
       }
     }
   },

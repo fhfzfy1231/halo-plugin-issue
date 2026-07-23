@@ -4,7 +4,7 @@ plugins {
     id "run.halo.plugin.devtools" version "0.6.2"
 }
 
-group = 'com.webjing.issues'
+group = 'team.foxbridge.issue'
 
 repositories {
     mavenCentral()
@@ -51,7 +51,7 @@ tasks.named('generatePluginComponentsIdx') {
 
 halo {
     version = '2.23'
-    containerName = 'plugin-issues'
+    containerName = 'halo-plugin-issue'
     debug = false
     port  = 8090
     suspend = true
@@ -67,14 +67,14 @@ haloPlugin {
                 // 分组显示名称
                 displayName = 'Extension API for issuesApi'
                 // 分组的 API 规则
-                pathsToMatch = ["/apis/issue.webjing.com/v1alpha1/**",
-                                "/apis/console.api.issue.webjing.com/v1alpha1/**",
-                                "/apis/uc.api.issue.webjing.com/v1alpha1/**",
-                                "/apis/console.api.issueTemplate.webjing.com/v1alpha1/**",
-                                "/apis/console.api.issueSubject.webjing.com/v1alpha1/**",
-                                "/apis/console.api.issueComment.webjing.com/v1alpha1/**",
-                                "/apis/uc.api.issueComment.webjing.com/v1alpha1/**",
-                                "/apis/console.api.issueLabel.webjing.com/v1alpha1/**"
+                pathsToMatch = ["/apis/issue.foxbridge.team/v1alpha1/**",
+                                "/apis/console.api.issue.foxbridge.team/v1alpha1/**",
+                                "/apis/uc.api.issue.foxbridge.team/v1alpha1/**",
+                                "/apis/console.api.issueTemplate.foxbridge.team/v1alpha1/**",
+                                "/apis/console.api.issueSubject.foxbridge.team/v1alpha1/**",
+                                "/apis/console.api.issueComment.foxbridge.team/v1alpha1/**",
+                                "/apis/uc.api.issueComment.foxbridge.team/v1alpha1/**",
+                                "/apis/console.api.issueLabel.foxbridge.team/v1alpha1/**"
                 ]
             }
         }

@@ -40,7 +40,7 @@ export const IssueCommentV1alpha1ApiAxiosParamCreator = function (configuration?
          * @throws {RequiredError}
          */
         createIssueComment: async (issueComment?: IssueComment, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/apis/issue.webjing.com/v1alpha1/issuecomments`;
+            const localVarPath = `/apis/issue.foxbridge.team/v1alpha1/issuecomments`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -83,7 +83,7 @@ export const IssueCommentV1alpha1ApiAxiosParamCreator = function (configuration?
         deleteIssueComment: async (name: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
             assertParamExists('deleteIssueComment', 'name', name)
-            const localVarPath = `/apis/issue.webjing.com/v1alpha1/issuecomments/{name}`
+            const localVarPath = `/apis/issue.foxbridge.team/v1alpha1/issuecomments/{name}`
                 .replace(`{${"name"}}`, encodeURIComponent(String(name)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -124,7 +124,7 @@ export const IssueCommentV1alpha1ApiAxiosParamCreator = function (configuration?
         getIssueComment: async (name: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
             assertParamExists('getIssueComment', 'name', name)
-            const localVarPath = `/apis/issue.webjing.com/v1alpha1/issuecomments/{name}`
+            const localVarPath = `/apis/issue.foxbridge.team/v1alpha1/issuecomments/{name}`
                 .replace(`{${"name"}}`, encodeURIComponent(String(name)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -167,7 +167,7 @@ export const IssueCommentV1alpha1ApiAxiosParamCreator = function (configuration?
          * @throws {RequiredError}
          */
         listIssueComment: async (page?: number, size?: number, labelSelector?: Array<string>, fieldSelector?: Array<string>, sort?: Array<string>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/apis/issue.webjing.com/v1alpha1/issuecomments`;
+            const localVarPath = `/apis/issue.foxbridge.team/v1alpha1/issuecomments`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -228,7 +228,7 @@ export const IssueCommentV1alpha1ApiAxiosParamCreator = function (configuration?
         patchIssueComment: async (name: string, jsonPatchInner?: Array<JsonPatchInner>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
             assertParamExists('patchIssueComment', 'name', name)
-            const localVarPath = `/apis/issue.webjing.com/v1alpha1/issuecomments/{name}`
+            const localVarPath = `/apis/issue.foxbridge.team/v1alpha1/issuecomments/{name}`
                 .replace(`{${"name"}}`, encodeURIComponent(String(name)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -273,7 +273,7 @@ export const IssueCommentV1alpha1ApiAxiosParamCreator = function (configuration?
         updateIssueComment: async (name: string, issueComment?: IssueComment, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
             assertParamExists('updateIssueComment', 'name', name)
-            const localVarPath = `/apis/issue.webjing.com/v1alpha1/issuecomments/{name}`
+            const localVarPath = `/apis/issue.foxbridge.team/v1alpha1/issuecomments/{name}`
                 .replace(`{${"name"}}`, encodeURIComponent(String(name)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);

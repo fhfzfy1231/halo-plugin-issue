@@ -14,8 +14,8 @@ spec:
   issues: https://github.com/fhfzfy1231/halo-plugin-issue/issues
   displayName: "Issue"
   description: "面向 Halo 2 的独立 Issue 管理插件，支持全局列表、内容查看和快捷标签分配。"
-  configMapName: plugin-issues-configmap
-  settingName: plugin-issues-settings
+  configMapName: halo-plugin-issue-configmap
+  settingName: halo-plugin-issue-settings
   license:
     - name: "GPL-3.0"
       url: "https://github.com/fhfzfy1231/halo-plugin-issue/blob/main/LICENSE"

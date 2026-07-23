@@ -1,30 +1,22 @@
 {
-  "description": "A development starter theme with modern front-end technology stack for Halo",
+  "description": "Static front-end assets for the Issue plugin",
   "keywords": [
     "halo",
     "halo-theme"
   ],
-  "homepage": "https://github.com/halo-dev/theme-modern-starter#readme",
+  "homepage": "https://github.com/fhfzfy1231/halo-plugin-issue#readme",
   "bugs": {
-    "url": "https://github.com/halo-dev/theme-modern-starter/issues"
+    "url": "https://github.com/fhfzfy1231/halo-plugin-issue/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/halo-dev/theme-modern-starter"
+    "url": "https://github.com/fhfzfy1231/halo-plugin-issue"
   },
   "license": "GPL-3.0",
   "author": {
-    "name": "webjing",
-    "email": "mail@webjing.com",
-    "url": "https://github.com/webjing-xin"
+    "name": "Akagi_Zen",
+    "url": "https://github.com/fhfzfy1231"
   },
-  "maintainers": [
-    {
-      "name": "webjing",
-      "email": "wb3368316006@outlook.com",
-      "url": "https://github.com/ruibaby"
-    }
-  ],
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite build --watch",
