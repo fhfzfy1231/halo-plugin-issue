@@ -1,0 +1,20 @@
+name: CD
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  cd:
+    uses: halo-sigs/reusable-workflows/.github/workflows/plugin-cd.yaml@v4
+    secrets:
+      halo-pat: ${{ secrets.HALO_PAT }}
+    permissions:
+      contents: write
+    with:
+      app-id: app-vxihanjo
+      node-version: 22
+      pnpm-version: 9
+      java-version: 21
+      ui-path: ui

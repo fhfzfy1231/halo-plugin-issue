@@ -1,0 +1,21 @@
+apiVersion: plugin.halo.run/v1alpha1
+kind: Plugin
+metadata:
+  name: PluginIssues
+spec:
+  enabled: true
+  requires: ">=2.23.0"
+  author:
+    name: Akagi_Zen
+    website: https://github.com/fhfzfy1231
+  logo: logo.png
+  homepage: https://github.com/fhfzfy1231/halo-plugin-issue#readme
+  repo: https://github.com/fhfzfy1231/halo-plugin-issue
+  issues: https://github.com/fhfzfy1231/halo-plugin-issue/issues
+  displayName: "Issue"
+  description: "面向 Halo 2 的独立 Issue 管理插件，支持全局列表、内容查看和快捷标签分配。"
+  configMapName: plugin-issues-configmap
+  settingName: plugin-issues-settings
+  license:
+    - name: "GPL-3.0"
+      url: "https://github.com/fhfzfy1231/halo-plugin-issue/blob/main/LICENSE"
