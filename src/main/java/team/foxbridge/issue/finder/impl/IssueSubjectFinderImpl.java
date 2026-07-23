@@ -24,7 +24,7 @@ import java.util.Set;
  * @author: Akagi_Zen
  * @date: 2025年06月08日 10:54
  */
-@Finder("IssueSubjectFinder")
+@Finder("foxbridgeIssueSubjectFinder")
 @RequiredArgsConstructor
 public class IssueSubjectFinderImpl implements IssueSubjectFinder {
 

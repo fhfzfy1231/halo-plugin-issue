@@ -46,7 +46,7 @@ import static run.halo.app.extension.index.query.Queries.equal;
  * @author: Akagi_Zen
  * @date: 2025年03月10日 14:54
  */
-@Finder("issuesFinder")
+@Finder("foxbridgeIssuesFinder")
 @RequiredArgsConstructor
 public class IssueFinderImpl implements IssueFinder {
 
