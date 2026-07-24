@@ -332,11 +332,9 @@ public class UcIssueEndpoint implements CustomEndpoint {
                     ? Set.<String>of()
                     : new LinkedHashSet<>(param.getAssignees());
                 return validateExtensionNames(User.class, assignees, "Unknown user: ")
-                    .then(client.get(Issue.class, name))
-                    .flatMap(issue -> {
-                        issue.getSpec().setAssignees(assignees);
-                        return issueService.consoleUpdateIssue(issue);
-                    });
+                    .then(roleService.getCurrentUser())
+                    .flatMap(currentUser ->
+                        issueService.updateAssignees(name, assignees, currentUser.getName()));
             })
             .flatMap(issue -> ServerResponse.ok().bodyValue(issue));
     }

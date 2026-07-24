@@ -48,11 +48,13 @@ public class IssueCommentReconciler  implements Reconciler<Reconciler.Request> {
             }
 
             if (addFinalizers(issueComment.getMetadata(), Set.of(FINALIZER))) {
-                // 为所有的评论订阅新的回复评论
-                Issue issue = client.fetch(Issue.class, issueComment.getSpec().getIssueName()).get();
-                notificationSubscriptionHelper.subscribeNewReplyCommentReasonForIssueComment(issue, issueComment);
+                // 系统事件只用于时间线展示，不触发普通评论订阅和新评论通知。
+                if (!Boolean.TRUE.equals(issueComment.getSpec().getSystemEvent())) {
+                    Issue issue = client.fetch(Issue.class, issueComment.getSpec().getIssueName()).get();
+                    notificationSubscriptionHelper.subscribeNewReplyCommentReasonForIssueComment(issue, issueComment);
+                    eventPublisher.publishEvent(new IssueCommentCreatedEvent(this, issueComment.getMetadata().getName()));
+                }
                 client.update(issueComment);
-                eventPublisher.publishEvent(new IssueCommentCreatedEvent(this, issueComment.getMetadata().getName()));
             }
             // add approved marks to the old data by default.
             if (issueComment.getSpec().getApproved() == null) {

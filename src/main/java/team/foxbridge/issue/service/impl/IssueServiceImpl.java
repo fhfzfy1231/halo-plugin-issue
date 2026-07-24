@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.web.util.HtmlUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.Counter;
@@ -31,6 +32,7 @@ import run.halo.app.core.extension.notification.Reason;
 import run.halo.app.core.extension.notification.Subscription;
 import run.halo.app.extension.ListOptions;
 import run.halo.app.extension.ListResult;
+import run.halo.app.extension.Metadata;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.infra.ExternalLinkProcessor;
 import run.halo.app.notification.NotificationCenter;
@@ -41,6 +43,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -170,11 +173,14 @@ public class IssueServiceImpl implements IssueService {
                 Sort.by(Sort.Order.desc("metadata.creationTimestamp")))
             .collectList()
             .map(comments -> {
-                int totalComment = comments.size();
-                long approvedComment = comments.stream()
+                var userComments = comments.stream()
+                    .filter(comment -> !Boolean.TRUE.equals(comment.getSpec().getSystemEvent()))
+                    .toList();
+                int totalComment = userComments.size();
+                long approvedComment = userComments.stream()
                     .filter(comment -> Boolean.TRUE.equals(comment.getSpec().getApproved()))
                     .count();
-                long awaitApprovedComment = comments.stream()
+                long awaitApprovedComment = userComments.stream()
                     .filter(comment -> Boolean.FALSE.equals(comment.getSpec().getApproved()))
                     .count();
                 return IssueStats.builder()
@@ -211,26 +217,35 @@ public class IssueServiceImpl implements IssueService {
         stateTransition.setOperator(closedOwner);
         stateTransition.setComment(closedComment);
         issue.getStatus().getTransitions().add(stateTransition);
-        // 设置状态为关闭
         issue.getStatus().setState(Issue.IssueState.CLOSED);
         issue.getSpec().setClosedAt(Instant.now());
-        // 更新状态
+
         var issueAnnotations = nullSafeAnnotations(issue);
-        var newIssueNotified = issueAnnotations.getOrDefault(Constant.CLOSED_ISSUE_NOTIFIED_ANNO,"false");
-        if (Objects.equals(newIssueNotified,"false")) {
-            Set<String> issueWatchers = new HashSet<>();
-            if (issue.getSpec().getAssignees() != null) {
-                issueWatchers.addAll(issue.getSpec().getAssignees());
-            }
-            issueWatchers.add(issue.getSpec().getOwner());
+        var newIssueNotified = issueAnnotations.getOrDefault(Constant.CLOSED_ISSUE_NOTIFIED_ANNO, "false");
+        Set<String> issueWatchers = new HashSet<>();
+        if (issue.getSpec().getAssignees() != null) {
+            issueWatchers.addAll(issue.getSpec().getAssignees());
+        }
+        issueWatchers.add(issue.getSpec().getOwner());
+
+        if (Objects.equals(newIssueNotified, "false")) {
             issueAnnotations.put(Constant.CLOSED_ISSUE_NOTIFIED_ANNO, "true");
             return client.update(issue)
-                .flatMap(updatedIssue -> this.sendClosedIssueNotification(
+                .flatMap(updatedIssue -> createSystemEvent(
+                        updatedIssue, closedOwner,
+                        IssueComment.IssueSystemEventType.STATUS_CLOSED,
+                        "关闭了 Issue，原因：" + closedComment)
+                    .then(sendClosedIssueNotification(
                         updatedIssue, issueWatchers, "全站 Issue", "Issue",
-                        closedComment, closedOwner)
+                        closedComment, closedOwner))
                     .thenReturn(updatedIssue));
         }
-        return client.update(issue);
+        return client.update(issue)
+            .flatMap(updatedIssue -> createSystemEvent(
+                    updatedIssue, closedOwner,
+                    IssueComment.IssueSystemEventType.STATUS_CLOSED,
+                    "关闭了 Issue，原因：" + closedComment)
+                .thenReturn(updatedIssue));
     }
 
     @Override
@@ -246,19 +261,31 @@ public class IssueServiceImpl implements IssueService {
         stateTransition.setToState(Issue.IssueState.PROGRESS);
         stateTransition.setTime(Instant.now());
         stateTransition.setOperator(reopenOwner);
-        stateTransition.setComment("重新打开Issue");
-        issue.getStatus().getTransitions().add(stateTransition);
-        // 设置状态为关闭
-        issue.getStatus().setState(Issue.IssueState.PROGRESS);
 
-        // 更新状态
+        boolean openingFromAwait = oldState == Issue.IssueState.AWAIT;
+        String transitionComment = openingFromAwait ? "打开Issue" : "重新打开Issue";
+        stateTransition.setComment(transitionComment);
+        issue.getStatus().getTransitions().add(stateTransition);
+        issue.getStatus().setState(Issue.IssueState.PROGRESS);
+        issue.getSpec().setClosedAt(null);
+
         var issueAnnotations = nullSafeAnnotations(issue);
         issueAnnotations.put(Constant.CLOSED_ISSUE_NOTIFIED_ANNO, "false");
-        return client.update(issue);
+
+        var eventType = openingFromAwait
+            ? IssueComment.IssueSystemEventType.STATUS_OPENED
+            : IssueComment.IssueSystemEventType.STATUS_REOPENED;
+        String eventText = openingFromAwait
+            ? "将 Issue 从等待中切换为处理中"
+            : "重新打开了 Issue";
+
+        return client.update(issue)
+            .flatMap(updatedIssue -> createSystemEvent(updatedIssue, reopenOwner, eventType, eventText)
+                .thenReturn(updatedIssue));
     }
 
     @Override
-    public Mono<Issue> setAwaitIssue(Issue issue, String setAwaitOwner){
+    public Mono<Issue> setAwaitIssue(Issue issue, String setAwaitOwner) {
         Issue.StateTransition stateTransition = new Issue.StateTransition();
         Issue.IssueState oldState = issue.getStatus().getState();
         stateTransition.setFromState(oldState);
@@ -267,31 +294,32 @@ public class IssueServiceImpl implements IssueService {
         stateTransition.setOperator(setAwaitOwner);
         stateTransition.setComment("设置Issue为等待中");
         issue.getStatus().getTransitions().add(stateTransition);
-        // 设置状态为等待中
         issue.getStatus().setState(Issue.IssueState.AWAIT);
-        if(oldState.equals(Issue.IssueState.CLOSED)){
+        if (oldState == Issue.IssueState.CLOSED) {
             var issueAnnotations = nullSafeAnnotations(issue);
             issueAnnotations.put(Constant.CLOSED_ISSUE_NOTIFIED_ANNO, "false");
+            issue.getSpec().setClosedAt(null);
         }
-        return client.update(issue);
+        return client.update(issue)
+            .flatMap(updatedIssue -> createSystemEvent(
+                    updatedIssue, setAwaitOwner,
+                    IssueComment.IssueSystemEventType.STATUS_AWAIT,
+                    "将 Issue 设置为等待中")
+                .thenReturn(updatedIssue));
     }
 
     /**
-     * console端更新issue
-     * @param issue
-     * @return
+     * console端更新issue。保留旧接口兼容现有调用。
      */
     @Override
-    public Mono<Issue> consoleUpdateIssue(Issue issue){
+    public Mono<Issue> consoleUpdateIssue(Issue issue) {
         return client.fetch(Issue.class, issue.getMetadata().getName())
             .doOnNext(oldIssue -> {
-                // 比对下Issue的经办人
                 Set<String> oldAssignees = oldIssue.getSpec().getAssignees();
                 Set<String> newAssignees = issue.getSpec().getAssignees();
-                // 找出新增的assignees
-                if (newAssignees != null && newAssignees.size() > 0) {
+                if (newAssignees != null && !newAssignees.isEmpty()) {
                     Set<String> addedAssignees = new HashSet<>(newAssignees);
-                    if (oldAssignees != null && oldAssignees.size() > 0) {
+                    if (oldAssignees != null && !oldAssignees.isEmpty()) {
                         addedAssignees.removeAll(oldAssignees);
                     }
                     for (String addedAssignee : addedAssignees) {
@@ -300,6 +328,83 @@ public class IssueServiceImpl implements IssueService {
                 }
             })
             .flatMap(oldIssue -> client.update(issue));
+    }
+
+    @Override
+    public Mono<Issue> updateAssignees(String issueName, Set<String> assignees, String operator) {
+        Set<String> targetAssignees = assignees == null
+            ? new LinkedHashSet<>()
+            : new LinkedHashSet<>(assignees);
+
+        return client.fetch(Issue.class, issueName)
+            .switchIfEmpty(Mono.error(new NotFoundException("Issue not found.")))
+            .flatMap(issue -> {
+                Set<String> oldAssignees = issue.getSpec().getAssignees() == null
+                    ? new LinkedHashSet<>()
+                    : new LinkedHashSet<>(issue.getSpec().getAssignees());
+
+                Set<String> addedAssignees = new LinkedHashSet<>(targetAssignees);
+                addedAssignees.removeAll(oldAssignees);
+
+                Set<String> removedAssignees = new LinkedHashSet<>(oldAssignees);
+                removedAssignees.removeAll(targetAssignees);
+
+                issue.getSpec().setAssignees(targetAssignees);
+
+                Mono<Void> subscribeAdded = Flux.fromIterable(addedAssignees)
+                    .concatMap(assignee -> notificationSubscriptionHelper
+                        .reactiveSubscribeComment(UserIdentity.of(assignee)))
+                    .then();
+
+                return subscribeAdded
+                    .then(client.update(issue))
+                    .flatMap(updatedIssue -> {
+                        Mono<Void> addedEvents = Flux.fromIterable(addedAssignees)
+                            .concatMap(assignee -> createSystemEvent(
+                                updatedIssue, operator,
+                                IssueComment.IssueSystemEventType.ASSIGNEE_ADDED,
+                                "分配了经办人 @" + assignee))
+                            .then();
+                        Mono<Void> removedEvents = Flux.fromIterable(removedAssignees)
+                            .concatMap(assignee -> createSystemEvent(
+                                updatedIssue, operator,
+                                IssueComment.IssueSystemEventType.ASSIGNEE_REMOVED,
+                                "移除了经办人 @" + assignee))
+                            .then();
+                        return addedEvents.then(removedEvents).thenReturn(updatedIssue);
+                    });
+            });
+    }
+
+    private Mono<Void> createSystemEvent(
+        Issue issue, String operator, IssueComment.IssueSystemEventType eventType, String message) {
+        IssueComment event = new IssueComment();
+        Metadata metadata = new Metadata();
+        metadata.setGenerateName("ic-system-");
+        event.setMetadata(metadata);
+
+        IssueComment.IssueCommentSpec spec = new IssueComment.IssueCommentSpec();
+        spec.setIssueName(issue.getMetadata().getName());
+        spec.setQuoteCommentUid("");
+        spec.setUserAgent("IssueSystemEvent");
+        spec.setIpAddress("");
+        spec.setOwner(operator);
+        spec.setApproved(true);
+        spec.setApprovedTime(Instant.now());
+        spec.setAllowNotification(false);
+        spec.setTop(false);
+        spec.setHidden(false);
+        spec.setSystemEvent(true);
+        spec.setSystemEventType(eventType);
+
+        IssueComment.IssueCommentContent content = new IssueComment.IssueCommentContent();
+        content.setRaw(message);
+        content.setHtml(HtmlUtils.htmlEscape(message));
+        content.setMedium(List.of());
+        spec.setContent(content);
+        event.setSpec(spec);
+
+        return client.create(event).then();
     }
 
     /**

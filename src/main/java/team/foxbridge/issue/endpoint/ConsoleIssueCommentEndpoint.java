@@ -85,6 +85,8 @@ public class ConsoleIssueCommentEndpoint implements CustomEndpoint {
                 .map(issueComment -> {
                     issueComment.getSpec().setApproved(true);
                     issueComment.getSpec().setApprovedTime(Instant.now());
+                    issueComment.getSpec().setSystemEvent(false);
+                    issueComment.getSpec().setSystemEventType(null);
                     issueComment.getSpec().setIpAddress(IpAddressUtils.getIpAddress(request));
                     issueComment.getSpec().setUserAgent(HaloUtils.userAgentFrom(request));
                     return issueComment;

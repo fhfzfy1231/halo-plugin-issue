@@ -161,7 +161,38 @@ content = ~{::content}, version = ${pluginVersion}, head = ~{::head} )}">
                     </div>
                     <!-- issue 评论数据  -->
                     <th:block th:if="${ not #lists.isEmpty(issueComments)}" th:each="issueComment : ${issueComments}">
-                        <div class="lg:piw-flex lg:piw-gap-x-3 piw-w-full" th:attr="x-data=|{commentId: '${issueComment.metadata.name}', issueCommentName: '${issueComment.metadata.name}', showEdit:false, replyCommentId: '${issueComment.spec.quoteCommentUid}'}|"
+                        <!-- GitHub 风格系统操作事件：状态切换、经办人变更等与评论按时间混排 -->
+                        <div th:if="${issueComment.spec.systemEvent == true}"
+                             class="lg:piw-flex lg:piw-gap-x-3 piw-w-full"
+                             th:id="${issueComment.metadata.name}">
+                            <div class="lg:piw-w-10 lg:piw-flex-shrink-0 piw-hidden lg:piw-flex piw-justify-center">
+                                <div class="piw-w-0.5 piw-bg-slate-300/80"></div>
+                            </div>
+                            <div class="piw-w-full piw-py-3">
+                                <div class="piw-flex piw-items-center piw-gap-2 piw-text-sm piw-text-slate-600" x-data="dateUtils">
+                                    <span class="piw-flex piw-size-7 piw-flex-shrink-0 piw-items-center piw-justify-center piw-rounded-full piw-border piw-border-slate-200 piw-bg-white">
+                                        <th:block th:switch="${issueComment.spec.systemEventType + ''}">
+                                            <span th:case="'STATUS_CLOSED'" class="piw-font-bold piw-text-slate-600">×</span>
+                                            <span th:case="'STATUS_OPENED'" class="piw-font-bold piw-text-green-700">✓</span>
+                                            <span th:case="'STATUS_REOPENED'" class="piw-font-bold piw-text-green-700">↻</span>
+                                            <span th:case="'STATUS_AWAIT'" class="piw-font-bold piw-text-indigo-600">…</span>
+                                            <span th:case="'ASSIGNEE_ADDED'" class="piw-font-bold piw-text-slate-600">+</span>
+                                            <span th:case="'ASSIGNEE_REMOVED'" class="piw-font-bold piw-text-slate-600">−</span>
+                                            <span th:case="*" class="piw-font-bold piw-text-slate-500">•</span>
+                                        </th:block>
+                                    </span>
+                                    <p class="piw-min-w-0 piw-flex-1 piw-leading-6">
+                                        <span class="piw-font-semibold piw-text-slate-800" th:text="${issueComment.contributorVo.displayName}"></span>
+                                        <span th:text="${issueComment.spec.content.raw}"></span>
+                                        <span class="piw-ml-1 piw-text-xs piw-text-slate-400"
+                                              th:attr="x-data=|{createTime: '${issueComment.metadata.creationTimestamp}'}|"
+                                              x-text="relativeTimeTo(createTime)"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${issueComment.spec.systemEvent != true}"
+                             class="lg:piw-flex lg:piw-gap-x-3 piw-w-full" th:attr="x-data=|{commentId: '${issueComment.metadata.name}', issueCommentName: '${issueComment.metadata.name}', showEdit:false, replyCommentId: '${issueComment.spec.quoteCommentUid}'}|"
                              :id="commentId">
                             <div class="lg:piw-flex-shrink-0 piw-hidden lg:piw-block lg:piw-pt-4" th:attr="x-data=|{ issueOwnerName: '${issueComment.contributorVo.name}' }|">
                                 <th:block th:replace="~{fragments/macro/ownerAvatar::ownerAvatar(avatar = ${issueComment.contributorVo.avatar}, name=${issueComment.contributorVo.name})}" />
@@ -259,6 +290,11 @@ content = ~{::content}, version = ${pluginVersion}, head = ~{::head} )}">
                     <div class="piw-w-full piw-my-3 lg:piw-pl-10 piw-flex piw-items-center piw-gap-x-3" sec:authorize="isAuthenticated()" x-data="messageBox">
                         <button class="piw-w-24 piw-rounded-md piw-bg-green-700 piw-text-neutral-100 piw-h-8 piw-text-sm piw-tracking-wider"
                                 @click="main.publishIssueComment(issueId, rawContent, preview, quoteCommentId)" >评论</button>
+                        <button class="piw-w-36 piw-rounded-md piw-bg-green-700 piw-text-neutral-100 piw-h-8 piw-text-sm piw-flex piw-items-center piw-justify-center"
+                                th:if="${#strings.equals(issueVO.status.state + '', 'AWAIT')}"
+                                th:disabled="${(not #strings.equals(currentUser.name, issueVO.contributorVo.name)) and (not #lists.contains(issueVO.spec.assignees, currentUser.name))}"
+                                th:classappend="${(not #strings.equals(currentUser.name, issueVO.contributorVo.name)) and (not #lists.contains(issueVO.spec.assignees, currentUser.name))} ? 'piw-cursor-not-allowed piw-opacity-60'"
+                                @click="main.reopenIssue(issueId)">打开 Issue</button>
                         <button class="piw-w-36 piw-rounded-md piw-bg-slate-100 piw-h-8 piw-text-sm piw-flex piw-items-center piw-justify-center "
                                 th:disabled="${(not #strings.equals(currentUser.name, issueVO.contributorVo.name)) and (not #lists.contains(issueVO.spec.assignees, currentUser.name))}"
                                 th:classappend="${(not #strings.equals(currentUser.name, issueVO.contributorVo.name)) and (not #lists.contains(issueVO.spec.assignees, currentUser.name))} ? 'piw-cursor-not-allowed'"

@@ -166,6 +166,8 @@ public class UcIssueCommentEndpoint implements CustomEndpoint {
                 .flatMap(issueComment -> {
                     issueComment.getSpec().setApproved(false);
                     issueComment.getSpec().setOwner(user.getName());
+                    issueComment.getSpec().setSystemEvent(false);
+                    issueComment.getSpec().setSystemEventType(null);
                     issueComment.getSpec().setIpAddress(IpAddressUtils.getIpAddress(request));
                     issueComment.getSpec().setUserAgent(HaloUtils.userAgentFrom(request));
                     var roles = AuthorityUtils.authoritiesToRoles(user.getAuthorities());
@@ -190,6 +192,8 @@ public class UcIssueCommentEndpoint implements CustomEndpoint {
         return roleService.getCurrentUser()
             .flatMap(user -> request.bodyToMono(IssueComment.class)
                 .flatMap(issueComment -> {
+                    issueComment.getSpec().setSystemEvent(false);
+                    issueComment.getSpec().setSystemEventType(null);
                     var roles = AuthorityUtils.authoritiesToRoles(user.getAuthorities());
                     return roleService.joint(roles,
                             Set.of(AuthorityUtils.ISSUE_COMMENT_PUBLISH_APPROVAL_ROLE_NAME,

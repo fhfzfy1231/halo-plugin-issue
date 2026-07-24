@@ -64,6 +64,12 @@ public class IssueComment extends AbstractExtension {
         @Schema(requiredMode = REQUIRED, defaultValue = "false", description = "是否隐藏")
         private Boolean hidden;
 
+        @Schema(defaultValue = "false", description = "是否为系统操作事件。系统事件显示在 Issue 时间线中，但不计入普通评论数量。")
+        private Boolean systemEvent;
+
+        @Schema(description = "系统事件类型")
+        private IssueSystemEventType systemEventType;
+
     }
 
     @Data
@@ -98,5 +104,14 @@ public class IssueComment extends AbstractExtension {
     public enum IssueDetailMediaType {
         PHOTO,
         POST,
+    }
+
+    public enum IssueSystemEventType {
+        STATUS_OPENED,
+        STATUS_REOPENED,
+        STATUS_AWAIT,
+        STATUS_CLOSED,
+        ASSIGNEE_ADDED,
+        ASSIGNEE_REMOVED
     }
 }

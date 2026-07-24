@@ -78,6 +78,18 @@ export interface IssueCommentSpec {
      */
     'quoteCommentUid'?: string;
     /**
+     * 是否为系统操作事件
+     * @type {boolean}
+     * @memberof IssueCommentSpec
+     */
+    'systemEvent'?: boolean;
+    /**
+     * 系统事件类型
+     * @type {string}
+     * @memberof IssueCommentSpec
+     */
+    'systemEventType'?: 'STATUS_OPENED' | 'STATUS_REOPENED' | 'STATUS_AWAIT' | 'STATUS_CLOSED' | 'ASSIGNEE_ADDED' | 'ASSIGNEE_REMOVED';
+    /**
      * 是否置顶
      * @type {boolean}
      * @memberof IssueCommentSpec

@@ -71,6 +71,7 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     public Mono<IssueComment> getByUsername(String issueCommentName, String name) {
         return client.get(IssueComment.class, issueCommentName)
             .filter(post -> post.getSpec() != null)
+            .filter(post -> !Boolean.TRUE.equals(post.getSpec().getSystemEvent()))
             .filter(post -> Objects.equals(name, post.getSpec().getOwner()));
     }
 

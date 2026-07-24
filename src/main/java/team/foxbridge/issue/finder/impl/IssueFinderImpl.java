@@ -310,11 +310,14 @@ public class IssueFinderImpl implements IssueFinder {
                 Sort.by(Sort.Order.desc("metadata.creationTimestamp")))
             .collectList()
             .map(comments -> {
-                int totalComment = comments.size();
-                long approvedComment = comments.stream()
+                var userComments = comments.stream()
+                    .filter(comment -> !Boolean.TRUE.equals(comment.getSpec().getSystemEvent()))
+                    .toList();
+                int totalComment = userComments.size();
+                long approvedComment = userComments.stream()
                     .filter(comment -> Boolean.TRUE.equals(comment.getSpec().getApproved()))
                     .count();
-                long awaitApprovedComment = comments.stream()
+                long awaitApprovedComment = userComments.stream()
                     .filter(comment -> Boolean.FALSE.equals(comment.getSpec().getApproved()))
                     .count();
                 return IssueStats.builder()

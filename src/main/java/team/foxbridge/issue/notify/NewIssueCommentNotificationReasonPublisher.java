@@ -49,6 +49,9 @@ public class NewIssueCommentNotificationReasonPublisher {
     public void onNewIssueComment(IssueCommentCreatedEvent event) {
         String issueCommentName = event.getIssueCommentName();
         IssueComment issueComment = client.fetch(IssueComment.class, issueCommentName).get();
+        if (Boolean.TRUE.equals(issueComment.getSpec().getSystemEvent())) {
+            return;
+        }
         var annotations = nullSafeAnnotations(issueComment);
         var newIssueNotified = annotations.getOrDefault(Constant.NEW_ISSUE_COMMENT_NOTIFIED_ANNO,"false");
         //只针对没有通知的issue进行通知
