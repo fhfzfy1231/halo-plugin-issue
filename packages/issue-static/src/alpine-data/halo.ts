@@ -80,12 +80,7 @@ export default ():HaloGeneralFun => ({
     if(!key || !window.location.search){
       return "";
     }
-    const params = window.location.search.substring(1).split("&");
-    const patchRes = params.filter(item => item.split("=")[0] === key);
-    if(patchRes && patchRes.length){
-      return patchRes[0].split("=")[1];
-    }
-    return "";
+    return new URLSearchParams(window.location.search).get(key) || "";
   }
 
 

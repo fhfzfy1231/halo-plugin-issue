@@ -119,11 +119,22 @@ export default (templateName: string) => ({
         fetchIssueTemplateDetails(templateName).then(res => {
             if (res.status == 200) {
                 this.issueTemplateRender = res.data;
-                this.issueTemplateRender.annotationFields?.forEach(filed => {
+                this.issueTemplateRender.components?.forEach(component => {
+                    const key = component.key;
+                    // 服务端已渲染并初始化的值优先，避免异步请求返回后把默认值/多选数组覆盖为空字符串。
+                    if (Object.prototype.hasOwnProperty.call(this.issueForm.metadata.annotations, key)) {
+                        return;
+                    }
+                    const defaultValue = component.defaultValue || "";
                     // @ts-ignore
-                    this.issueForm.metadata.annotations[filed] = "";
+                    this.issueForm.metadata.annotations[key] = component.type === "RADIO"
+                        ? (defaultValue ? [defaultValue] : [])
+                        : defaultValue;
                 })
             }
+        }).catch(error => {
+            // 模板主体已经由服务端优先渲染；这里仅作为前端兜底，不再让请求失败导致模板界面消失。
+            console.warn("Failed to fetch issue template details:", error);
         })
     },
 

@@ -242,9 +242,13 @@ const handlerSelectComponent = (component: Component) => {
  * 新增或更新issue模版
  */
 const handlerSaveTemplate = () => {
-  // 获取所有设置的模版字段
+  // 每次保存都从当前布局重新生成字段，避免已删除的旧字段残留在 fieldList 中。
+  fieldList.value = {};
   templateLayout.value?.forEach((item) => {
-    fieldList.value[item.attrs.key] = item.attrs;
+    fieldList.value[item.attrs.key] = {
+      ...item.attrs,
+      fieldOptions: [...(item.attrs.fieldOptions || [])],
+    };
   });
   if (initIssueTemplate.value.spec) {
     initIssueTemplate.value.spec.fields = fieldList.value;
@@ -293,7 +297,7 @@ const handlerSaveTemplate = () => {
 
 const handlerDeleteComponent = (component: Component) => {
   const index = templateLayout.value.findIndex(
-    (item) => item.id === component.id,
+    (item) => item.attrs.key === component.attrs.key,
   );
   if (index !== -1) {
     templateLayout.value.splice(index, 1);
@@ -306,7 +310,7 @@ const cloneComponent = (original: Component) => {
     ...original,
     attrs: {
       ...original.attrs,
-      fieldOptions: original.attrs.fieldOptions,
+      fieldOptions: [...(original.attrs.fieldOptions || [])],
     },
   };
 };

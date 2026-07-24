@@ -14,7 +14,7 @@ export function createIssue(issue: Issue) {
 }
 
 export function fetchIssueTemplateDetails(templateName: string) {
-    const urlPath = `${apiVersion}/issuetemplates/${templateName}`;
+    const urlPath = `${apiVersion}/issuetemplates/${encodeURIComponent(templateName)}`;
     return axiosInstance.get(urlPath);
 }
 

@@ -26,11 +26,13 @@ import run.halo.app.theme.router.PageUrlUtils;
 import run.halo.app.theme.router.UrlContextListResult;
 import team.foxbridge.issue.entity.IssueSubjectStats;
 import team.foxbridge.issue.entity.IssueTemplateOptions;
+import team.foxbridge.issue.entity.IssueTemplateRender;
 import team.foxbridge.issue.extension.Issue;
 import team.foxbridge.issue.extension.IssueLabel;
 import team.foxbridge.issue.extension.IssueTemplate;
 import team.foxbridge.issue.finder.IssueFinder;
 import team.foxbridge.issue.service.RoleService;
+import team.foxbridge.issue.service.IssueTemplateService;
 import team.foxbridge.issue.service.SettingConfigGetter;
 import team.foxbridge.issue.vo.IssueVO;
 import run.halo.app.infra.ExternalUrlSupplier;
@@ -47,6 +49,7 @@ public class IssuesRouter {
     private final TemplateNameResolver templateNameResolver;
     private final PluginContext pluginContext;
     private final RoleService roleService;
+    private final IssueTemplateService issueTemplateService;
     private final ReactiveExtensionClient client;
     private final ExternalUrlSupplier externalUrlSupplier;
 
@@ -98,16 +101,34 @@ public class IssuesRouter {
                         .location(URI.create(redirect))
                         .build();
                 }
-                return templateNameResolver
+                String selectedTemplateName = request.queryParam("template").orElse("").trim();
+                Mono<IssueTemplateRender> selectedTemplate = selectedTemplateName.isBlank()
+                    ? Mono.just(emptyTemplateRender())
+                    : issueTemplateService.buildTemplateData(selectedTemplateName)
+                        .defaultIfEmpty(emptyTemplateRender())
+                        .onErrorReturn(emptyTemplateRender());
+
+                return selectedTemplate.flatMap(templateRender -> templateNameResolver
                     .resolveTemplateNameOrDefault(request.exchange(), "newIssue")
                     .flatMap(templateName -> {
                         Map<String, Object> model = new HashMap<>();
                         model.put("issueStats", globalIssueStats());
                         model.put("issueTemplates", listGlobalTemplates());
+                        model.put("selectedIssueTemplate", templateRender);
+                        model.put("selectedTemplateName", selectedTemplateName);
                         buildCommonVariables(model);
                         return ServerResponse.ok().render(templateName, model);
-                    });
+                    }));
             });
+    }
+
+
+    private IssueTemplateRender emptyTemplateRender() {
+        IssueTemplateRender render = new IssueTemplateRender();
+        render.setDisplayName("");
+        render.setComponents(java.util.List.of());
+        render.setAnnotationFields(java.util.List.of());
+        return render;
     }
 
     private Mono<UrlContextListResult<IssueVO>> issuePageList(ServerRequest request) {
