@@ -17,6 +17,7 @@ import team.foxbridge.issue.entity.ListedIssue;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import java.time.Instant;
 import java.util.Set;
+import java.util.LinkedHashSet;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -146,6 +147,25 @@ public class UcIssueEndpoint implements CustomEndpoint {
                     .response(responseBuilder()
                         .implementation(Issue.class))
             )
+            .PUT("issues/{name}/labels", this::updateIssueLabels,
+                builder -> builder.operationId("UpdateIssueLabels")
+                    .description("Update labels for an issue. Issue management permission is required.")
+                    .tag(tag)
+                    .parameter(parameterBuilder()
+                        .name("name")
+                        .in(ParameterIn.PATH)
+                        .required(true)
+                        .implementation(String.class)
+                    )
+                    .requestBody(requestBodyBuilder()
+                        .required(true)
+                        .content(contentBuilder()
+                            .mediaType(MediaType.APPLICATION_JSON_VALUE)
+                            .schema(Builder.schemaBuilder()
+                                .implementation(IssueLabelsUpdateParam.class))
+                        ))
+                    .response(responseBuilder().implementation(Issue.class))
+            )
             .DELETE("issues/{name}", this::deleteMyIssue,
                 builder -> builder.operationId("DeleteMyIssue")
                     .description("Delete a My Issue.")
@@ -245,6 +265,33 @@ public class UcIssueEndpoint implements CustomEndpoint {
                         // newSpec.setApproved(false);
                     })
                     .flatMap(issueService::updateBy);
+            })
+            .flatMap(issue -> ServerResponse.ok().bodyValue(issue));
+    }
+
+    private Mono<ServerResponse> updateIssueLabels(ServerRequest request) {
+        var name = request.pathVariable("name");
+        return roleService.getCurrentUser()
+            .flatMap(currentUser -> {
+                var roles = AuthorityUtils.authoritiesToRoles(currentUser.getAuthorities());
+                return roleService.joint(roles,
+                        Set.of(AuthorityUtils.ISSUE_MESSAGE_MANAGEMENT_ROLE_NAME,
+                            AuthorityUtils.SUPER_ROLE_NAME))
+                    .flatMap(hasPermission -> {
+                        if (!hasPermission) {
+                            return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                "Issue management permission is required"));
+                        }
+                        return request.bodyToMono(IssueLabelsUpdateParam.class)
+                            .flatMap(param -> client.get(Issue.class, name)
+                                .flatMap(issue -> {
+                                    var labels = param.getLabels() == null
+                                        ? Set.<String>of()
+                                        : new LinkedHashSet<>(param.getLabels());
+                                    issue.getSpec().setLabels(labels);
+                                    return issueService.updateBy(issue);
+                                }));
+                    });
             })
             .flatMap(issue -> ServerResponse.ok().bodyValue(issue));
     }
@@ -375,6 +422,11 @@ public class UcIssueEndpoint implements CustomEndpoint {
                 Set.of(AuthorityUtils.ISSUE_MESSAGE_MANAGEMENT_ROLE_NAME,
                     AuthorityUtils.SUPER_ROLE_NAME))
             .map(isManager -> isOwner || isAssignee || isManager);
+    }
+
+    @Data
+    public static class IssueLabelsUpdateParam {
+        private Set<String> labels = new LinkedHashSet<>();
     }
 
     @Override

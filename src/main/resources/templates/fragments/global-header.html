@@ -13,6 +13,10 @@
                 </div>
             </a>
             <div class="piw-flex piw-items-center piw-gap-x-3">
+                <a th:href="${siteHomeUrl}"
+                   class="piw-text-sm piw-text-slate-600 hover:piw-text-slate-900">
+                    返回首页
+                </a>
                 <a sec:authorize="isAuthenticated()" href="/console/issues/list"
                    class="piw-text-sm piw-text-slate-600 hover:piw-text-slate-900">
                     管理后台

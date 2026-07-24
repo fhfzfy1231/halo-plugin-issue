@@ -37,8 +37,17 @@
             暂无经办人
         </p>
     </div>
-    <div class="piw-space-y-2 piw-py-3">
-        <p class="piw-text-sm piw-tracking-wider">标签</p>
+    <div class="piw-space-y-2 piw-py-3"
+         th:attr="data-issue-name=${issueVO.metadata.name}"
+         x-data="issueLabelManager">
+        <div class="piw-flex piw-items-center piw-justify-between">
+            <p class="piw-text-sm piw-tracking-wider">标签</p>
+            <span sec:authorize="isAuthenticated()"
+                  x-data="uiPermission($el.dataset.currentUser, 'plugin:issues:manage')"
+                  th:attr="data-current-user=${#authentication.name}"
+                  x-show="shouldDisplay"
+                  class="piw-text-xs piw-font-medium piw-text-green-700">可直接编辑</span>
+        </div>
         <div class="piw-flex piw-flex-wrap piw-items-center piw-gap-1.5"
              th:if="${#lists.size(issueVO.issueLabels) > 0}">
             <th:block th:each="item:${issueVO.issueLabels}">
@@ -49,6 +58,33 @@
         <p th:if="${ #lists.isEmpty(issueVO.spec.labels)}" class="piw-text-sm piw-tracking-wider piw-text-neutral-400">
             暂无标签
         </p>
+        <div sec:authorize="isAuthenticated()"
+             x-data="uiPermission($el.dataset.currentUser, 'plugin:issues:manage')"
+             th:attr="data-current-user=${#authentication.name}"
+             x-show="shouldDisplay"
+             class="piw-mt-2 piw-space-y-2 piw-rounded-md piw-border piw-border-slate-200 piw-bg-slate-50 piw-p-3">
+            <div class="piw-flex piw-max-h-48 piw-flex-col piw-gap-2 piw-overflow-y-auto">
+                <label th:each="label:${availableIssueLabels}"
+                       class="piw-flex piw-cursor-pointer piw-items-center piw-gap-2 piw-text-sm">
+                    <input type="checkbox"
+                           data-issue-label
+                           th:value="${label.metadata.name}"
+                           th:checked="${issueVO.spec.labels != null && issueVO.spec.labels.contains(label.metadata.name)}">
+                    <span class="piw-size-3 piw-rounded-full"
+                          th:style="|background-color:${label.spec.color}|"></span>
+                    <span th:text="${label.spec.labelName}"></span>
+                </label>
+                <p th:if="${#lists.isEmpty(availableIssueLabels)}"
+                   class="piw-text-xs piw-text-slate-400">暂无可用标签</p>
+            </div>
+            <button type="button"
+                    :disabled="saving"
+                    @click="save()"
+                    x-text="saveText"
+                    class="piw-w-full piw-rounded-md piw-bg-green-700 piw-px-3 piw-py-1.5 piw-text-xs piw-text-white disabled:piw-opacity-60">
+                保存标签
+            </button>
+        </div>
     </div>
     <div class="piw-space-y-2 piw-py-3">
         <div class="piw-flex piw-justify-between piw-items-center">

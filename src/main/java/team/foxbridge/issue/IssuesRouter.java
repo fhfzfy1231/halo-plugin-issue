@@ -27,11 +27,13 @@ import run.halo.app.theme.router.UrlContextListResult;
 import team.foxbridge.issue.entity.IssueSubjectStats;
 import team.foxbridge.issue.entity.IssueTemplateOptions;
 import team.foxbridge.issue.extension.Issue;
+import team.foxbridge.issue.extension.IssueLabel;
 import team.foxbridge.issue.extension.IssueTemplate;
 import team.foxbridge.issue.finder.IssueFinder;
 import team.foxbridge.issue.service.RoleService;
 import team.foxbridge.issue.service.SettingConfigGetter;
 import team.foxbridge.issue.vo.IssueVO;
+import run.halo.app.infra.ExternalUrlSupplier;
 
 /**
  * 全局 Issue 前台路由。
@@ -46,6 +48,7 @@ public class IssuesRouter {
     private final PluginContext pluginContext;
     private final RoleService roleService;
     private final ReactiveExtensionClient client;
+    private final ExternalUrlSupplier externalUrlSupplier;
 
     @Bean
     RouterFunction<ServerResponse> issueRouterFunction() {
@@ -78,6 +81,7 @@ public class IssuesRouter {
                     model.put("issueComments", issueFinder.listAllIssueComments(issueName));
                     model.put("issueStats", globalIssueStats());
                     model.put("issueTemplates", listGlobalTemplates());
+                    model.put("availableIssueLabels", listAvailableLabels());
                     model.put("issueCosedComment", getIssueClosedComment());
                     buildCommonVariables(model);
                     return ServerResponse.ok().render(templateName, model);
@@ -164,8 +168,18 @@ public class IssuesRouter {
             });
     }
 
+    private Mono<java.util.List<IssueLabel>> listAvailableLabels() {
+        var options = ListOptions.builder()
+            .fieldQuery(equal("spec.scope", IssueLabel.LabelScope.GLOBAL.name()))
+            .build();
+        return client.listAll(IssueLabel.class, options,
+                Sort.by("metadata.creationTimestamp").ascending())
+            .collectList();
+    }
+
     private void buildCommonVariables(Map<String, Object> model) {
         model.put("pluginVersion", pluginContext.getVersion());
+        model.put("siteHomeUrl", externalUrlSupplier.get().toString());
         model.put("issueAvatarMode", getSetting(
             SettingConfigGetter.IssuesBasic::getDefaultAvatarMode, "default"));
         model.put("contentStyle", getSetting(

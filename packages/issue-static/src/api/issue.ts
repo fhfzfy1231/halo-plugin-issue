@@ -28,6 +28,11 @@ export function updateMyIssue(issue: Issue){
     return axiosInstance.put(urlPath, issue)
 }
 
+export function updateIssueLabels(issueName: string, labels: string[]) {
+    const urlPath = `${apiVersion}/issues/${issueName}/labels`;
+    return axiosInstance.put(urlPath, { labels });
+}
+
 export function closedMyIssue(curIssueName: string, closedComment: string){
     const urlPath = `${apiVersion}/issuestatus`;
     return axiosInstance.put(urlPath, {issueName: curIssueName, changeComment: closedComment, issueState: 'CLOSED'})
