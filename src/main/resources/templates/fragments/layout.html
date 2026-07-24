@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title th:text="${title}">Issues</title>
     <link rel="stylesheet" th:href="@{/plugins/PluginIssues/assets/static/webAssets/style.css?v={version}(version=${version})}" />
-    <script th:src="@{/plugins/PluginIssues/assets/static/webAssets/main.iife.js?v={version}(version=${version})}" type="text/javascript"></script>
+    <script th:src="@{/plugins/PluginIssues/assets/static/webAssets/main.iife.js?v={version}(version=${version})}" type="text/javascript" defer></script>
     <th:block th:if="${head != null}">
         <th:block th:replace="${head}" />
     </th:block>

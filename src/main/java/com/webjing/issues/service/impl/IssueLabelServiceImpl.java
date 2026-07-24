@@ -48,10 +48,15 @@ public class IssueLabelServiceImpl implements IssueLabelService {
 
     @Override
     public Mono<IssueLabel> create(IssueLabel issueLabel) {
+        if (issueLabel.getSpec().getScope() == null) {
+            issueLabel.getSpec().setScope(IssueLabel.LabelScope.GLOBAL);
+        }
         // 获取标签名称和主体名称
         String labelName = issueLabel.getSpec().getLabelName();
         String subjectName = issueLabel.getSpec().getSubjectName();
-        String subjectType = issueLabel.getSpec().getSubjectType().name();
+        String subjectType = issueLabel.getSpec().getSubjectType() == null
+            ? ""
+            : issueLabel.getSpec().getSubjectType().name();
         IssueLabel.LabelScope tagScope = issueLabel.getSpec().getScope();
         // 构建重复检测查询
         Mono<Boolean> duplicateCheck;

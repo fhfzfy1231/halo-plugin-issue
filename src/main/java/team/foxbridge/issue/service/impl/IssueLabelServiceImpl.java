@@ -48,58 +48,24 @@ public class IssueLabelServiceImpl implements IssueLabelService {
 
     @Override
     public Mono<IssueLabel> create(IssueLabel issueLabel) {
-        // 获取标签名称和主体名称
+        // Issue 插件仅使用全局标签。兼容旧客户端缺失 scope 或仍携带主体字段的请求。
+        issueLabel.getSpec().setScope(IssueLabel.LabelScope.GLOBAL);
+        issueLabel.getSpec().setSubjectType(null);
+        issueLabel.getSpec().setSubjectName(null);
         String labelName = issueLabel.getSpec().getLabelName();
-        String subjectName = issueLabel.getSpec().getSubjectName();
-        String subjectType = issueLabel.getSpec().getSubjectType().name();
-        IssueLabel.LabelScope tagScope = issueLabel.getSpec().getScope();
-        // 构建重复检测查询
-        Mono<Boolean> duplicateCheck;
-        if (tagScope.name().equals("GLOBAL")) {
-            // 全局标签：检测所有同名全局标签 - 修复布尔值类型
-            duplicateCheck = client.listAll(IssueLabel.class,
-                    ListOptions.builder()
-                        .fieldQuery(and(
-                            equal("spec.labelName", labelName),
-                            equal("spec.scope", "GLOBAL")
-                        )).build(),
-                    Sort.by(Sort.Order.desc("metadata.creationTimestamp")))
-                .collectList()
-                .map(list -> !list.isEmpty());
-        }else if(tagScope.name().equals("SUBJECT_TYPE")){
-            // 针对某一主体类型增加
-            duplicateCheck = client.listAll(IssueLabel.class,
-                    ListOptions.builder()
-                        .fieldQuery(and(
-                            equal("spec.labelName", labelName),
-                            equal("spec.scope", "SUBJECT_TYPE"),
-                            equal("spec.subjectType", subjectType)
-                        )).build(),
-                    Sort.by(Sort.Order.desc("metadata.creationTimestamp")))
-                .collectList()
-                .map(list -> !list.isEmpty());
-        } else {
-            // 非全局标签：检测同主体下同名标签 - 修复查询条件
-            duplicateCheck = client.listAll(IssueLabel.class,
-                    ListOptions.builder()
-                        .fieldQuery(and(
-                            equal("spec.labelName", labelName),
-                            equal("spec.scope", "SUBJECT"),
-                            equal("spec.subjectName", subjectName)
-                        )).build(),
-                    Sort.by(Sort.Order.desc("metadata.creationTimestamp")))
-                .collectList()
-                .map(list -> !list.isEmpty());
-        }
+        Mono<Boolean> duplicateCheck = client.listAll(IssueLabel.class,
+                ListOptions.builder()
+                    .fieldQuery(and(
+                        equal("spec.labelName", labelName),
+                        equal("spec.scope", "GLOBAL")
+                    )).build(),
+                Sort.by(Sort.Order.desc("metadata.creationTimestamp")))
+            .hasElements();
 
         // 执行检测并创建
         return duplicateCheck.flatMap(exists -> {
             if (exists) {
-                return switch (tagScope){
-                    case GLOBAL ->  Mono.error(new IllegalArgumentException("全局标签名称重复: " + labelName));
-                    case SUBJECT_TYPE -> Mono.error(new IllegalArgumentException("主体类型【" + IssueSubject.parseSubjectType(issueLabel.getSpec().getSubjectType()) + "】内标签名称重复: " + labelName));
-                    case SUBJECT -> client.fetch(IssueSubject.class, subjectName).flatMap(issueSubject -> Mono.error(new IllegalArgumentException("主体【" + issueSubject.getSpec().getDisplayName() + "】内标签名称重复: " + labelName)));
-                };
+                return Mono.error(new IllegalArgumentException("全局标签名称重复: " + labelName));
             }
             return client.create(issueLabel);
         });

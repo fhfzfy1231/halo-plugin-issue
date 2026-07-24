@@ -1,15 +1,13 @@
 <script lang="ts" setup>
 import { VModal, VButton, VSpace, Toast } from "@halo-dev/components";
-import { computed, nextTick, onMounted, ref, toRaw, watchEffect } from "vue";
-import type { IssueLabel, IssueSubject } from "@/api/generated";
+import { computed, nextTick, ref, toRaw, watchEffect } from "vue";
+import type { IssueLabel } from "@/api/generated";
 import cloneDeep from "lodash.clonedeep";
 import {
-  issueSubjectApiClient,
   issueLabelApiClient,
   consoleIssueLabelApiClient,
 } from "@/api";
 import { submitForm } from "@formkit/core";
-import { labelScopeTypeOptions, subjectTypeOptions } from "@/dictionary";
 const modalTitle = ref("新增 issue 标签");
 const saving = ref<boolean>(false);
 const props = withDefaults(
@@ -23,22 +21,12 @@ const props = withDefaults(
   },
 );
 
-const labelScopeSelectionOptions = computed(() =>
-  labelScopeTypeOptions.value.filter((item) => item.label != "默认"),
-);
-const subjectSelectTypeOptions = computed(() =>
-  subjectTypeOptions.value.filter((item) => item.label != "默认"),
-);
 const emit = defineEmits<{
   (event: "update:visible", value: boolean): void;
   (event: "close", value: boolean): void;
   (event: "save", issueLabel: IssueLabel): void;
   (event: "update", issueLabel: IssueLabel): void;
 }>();
-
-const subjectOptions = ref<Array<{ label: string | undefined; value: string }>>(
-  [],
-);
 
 const initIssueLabel: IssueLabel = {
   kind: "IssueLabel",
@@ -53,8 +41,6 @@ const initIssueLabel: IssueLabel = {
     color: "#71C8A3",
     slug: "",
     scope: "GLOBAL",
-    subjectType: "PROJECT",
-    subjectName: "",
   },
 };
 
@@ -65,10 +51,6 @@ watchEffect(() => {
     formState.value = cloneDeep(props.issueLabel);
     modalTitle.value = "编辑 issue 标签";
   }
-});
-
-onMounted(() => {
-  handlerIssueSubjectOptions();
 });
 
 const isUpdateMode = computed(
@@ -104,6 +86,9 @@ const onSubmit = async () => {
       ...annotations,
       ...customAnnotations,
     };
+    formState.value.spec.scope = "GLOBAL";
+    formState.value.spec.subjectType = undefined;
+    formState.value.spec.subjectName = undefined;
 
     if (isUpdateMode.value) {
       await handleUpdate();
@@ -128,18 +113,6 @@ const handleUpdate = async () => {
   if (res.status == 200) {
     Toast.success("更新成功!");
   }
-};
-
-const handlerIssueSubjectOptions = () => {
-  issueSubjectApiClient.issueSubject.listIssueSubject().then(({ data }) => {
-    data.items.forEach((it: IssueSubject) => {
-      const itemOption = {
-        label: it.spec.displayName,
-        value: it.metadata.name,
-      };
-      subjectOptions.value.push(itemOption);
-    });
-  });
 };
 
 // 新增 issue
@@ -196,32 +169,6 @@ const handleReset = () => {
             rows="3"
             name="description"
             label="标签描述"
-          />
-          <FormKit
-            type="radio"
-            name="scope"
-            clearable
-            validation="required"
-            label="标签作用范围"
-            modifiers="trim"
-            help="同名标签生效范围为全局<特定主体类型<特定主体"
-            :options="labelScopeSelectionOptions"
-          />
-          <FormKit
-            v-if="formState.spec.scope == 'SUBJECT_TYPE'"
-            type="select"
-            name="subjectType"
-            clearable
-            label="标签归属的主体类型"
-            :options="subjectSelectTypeOptions"
-          />
-          <FormKit
-            v-if="formState.spec.scope == 'SUBJECT'"
-            type="select"
-            name="subjectName"
-            clearable
-            label="标签归属的主体"
-            :options="subjectOptions"
           />
         </FormKit>
       </div>

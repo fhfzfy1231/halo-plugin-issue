@@ -16,53 +16,15 @@ import {
   VEntityContainer,
 } from "@halo-dev/components";
 import { useRouteQuery } from "@vueuse/router";
-import { computed, provide, type Ref, ref, onMounted, watch, nextTick } from "vue";
+import { provide, type Ref, ref, watch, nextTick } from "vue";
 import "vue-datepicker-next/index.css";
 import "vue-datepicker-next/locale/zh-cn.es";
 import { useIssueLabels } from "@/composables/use-issueLabels";
-import type {
-  IssueLabel, IssueLabelSpecScopeEnum,
-  IssueSubject,
-  IssueSubjectSpecSubjectTypeEnum,
-  ListedIssueLabel
-} from "@/api/generated";
-import { issueLabelApiClient, issueSubjectApiClient } from "@/api";
+import type { IssueLabel, ListedIssueLabel } from "@/api/generated";
+import { issueLabelApiClient } from "@/api";
 import IssueLabelEditModal from "@/components/issue/IssueLabelEditModal.vue";
-import { labelScopeTypeOptions, subjectTypeOptions } from "@/dictionary";
 
-const selectedSubjectName = useRouteQuery<string | undefined>("subjectName");
 const selectedSort = useRouteQuery<string | undefined>("sort");
-const selectedLabelScope = useRouteQuery<IssueLabelSpecScopeEnum | undefined>("labelScope");
-const selectedSubjectType = useRouteQuery<IssueSubjectSpecSubjectTypeEnum | undefined>("subjectType");
-
-const hasFilters = computed(() => {
-  return (
-    selectedSubjectName.value || selectedLabelScope.value || selectedSort.value || selectedSubjectType.value
-  );
-});
-
-const handleClearFilters = () => {
-  selectedSubjectName.value = undefined;
-  selectedLabelScope.value = undefined;
-  selectedSort.value = undefined;
-  selectedSubjectType.value = undefined;
-};
-
-const subjectOptions = ref<Array<{ label: string | undefined; value: string }>>(
-  [],
-);
-
-const handlerIssueSubjectOptions = () => {
-  issueSubjectApiClient.issueSubject.listIssueSubject().then(({ data }) => {
-    data.items.forEach((it: IssueSubject) => {
-      const itemOption = {
-        label: it.spec.displayName,
-        value: it.metadata.name,
-      };
-      subjectOptions.value.push(itemOption);
-    });
-  });
-};
 const selectedIssueLabel = ref<IssueLabel>();
 const checkedAll = ref(false);
 const selectedIssueLabelNames = ref<string[]>([]);
@@ -79,9 +41,9 @@ const { issueLabels, isLoading, isFetching, refetch, total } = useIssueLabels(
   size,
   keyword,
   selectedSort,
-  selectedSubjectName,
-  selectedLabelScope,
-  selectedSubjectType
+  undefined,
+  undefined,
+  undefined,
 );
 
 const handlerNewIssue = () => {
@@ -157,9 +119,6 @@ const emitUpdateIssueLabel = () => {
   refetch();
 };
 
-onMounted(() => {
-  handlerIssueSubjectOptions();
-});
 </script>
 
 <template>
@@ -211,25 +170,6 @@ onMounted(() => {
                 </div>
                 <div class=":uno: w-auto sm:w-auto">
                   <VSpace spacing="sm" class="flex flex-wrap">
-                    <FilterCleanButton
-                      v-if="hasFilters"
-                      @click="handleClearFilters"
-                    />
-                    <FilterDropdown
-                      v-model="selectedLabelScope"
-                      label="标签作用范围"
-                      :items="labelScopeTypeOptions"
-                    />
-                    <FilterDropdown
-                      v-model="selectedSubjectType"
-                      :items="subjectTypeOptions"
-                      label="依托主体类型"
-                    />
-                    <FilterDropdown
-                      v-model="selectedSubjectName"
-                      :items="subjectOptions"
-                      label="依托主体"
-                    />
                     <FilterDropdown
                       v-model="selectedSort"
                       label="排序"

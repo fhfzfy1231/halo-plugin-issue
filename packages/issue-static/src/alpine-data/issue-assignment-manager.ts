@@ -11,6 +11,7 @@ interface AssignableUser {
 }
 
 interface State {
+    issueName: string;
     assigneeOpen: boolean;
     labelOpen: boolean;
     savingAssignees: boolean;
@@ -48,6 +49,7 @@ function initialValues(root: HTMLElement, key: "assignees" | "labels"): string[]
 }
 
 export default (): State => ({
+    issueName: "",
     assigneeOpen: false,
     labelOpen: false,
     savingAssignees: false,
@@ -60,6 +62,7 @@ export default (): State => ({
 
     init() {
         const root = (this as AlpineState).$root;
+        this.issueName = root.dataset.issueName || "";
         this.selectedAssignees = initialValues(root, "assignees");
         this.selectedLabels = initialValues(root, "labels");
     },
@@ -113,13 +116,12 @@ export default (): State => ({
         if (this.savingAssignees) {
             return;
         }
-        const issueName = (this as AlpineState).$root.dataset.issueName;
-        if (!issueName) {
+        if (!this.issueName) {
             return;
         }
         this.savingAssignees = true;
         try {
-            await updateIssueAssignees(issueName, this.selectedAssignees);
+            await updateIssueAssignees(this.issueName, this.selectedAssignees);
             window.location.reload();
         } catch (error) {
             console.error(error);
@@ -132,13 +134,12 @@ export default (): State => ({
         if (this.savingLabels) {
             return;
         }
-        const issueName = (this as AlpineState).$root.dataset.issueName;
-        if (!issueName) {
+        if (!this.issueName) {
             return;
         }
         this.savingLabels = true;
         try {
-            await updateIssueLabels(issueName, this.selectedLabels);
+            await updateIssueLabels(this.issueName, this.selectedLabels);
             window.location.reload();
         } catch (error) {
             console.error(error);

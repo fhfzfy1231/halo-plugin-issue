@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [],
   build: {
     // @ts-ignore
-    outDir: fileURLToPath(new URL("../../src/main/resources/static/dist", import.meta.url)),
+    outDir: fileURLToPath(new URL("../../src/main/resources/static/webAssets", import.meta.url)),
     emptyOutDir: true,
     lib: {
       entry: path.resolve(__dirname, "src/main.ts"),
