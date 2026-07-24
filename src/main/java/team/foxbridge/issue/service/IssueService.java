@@ -42,5 +42,7 @@ public interface IssueService {
 
     Mono<Issue> updateAssignees(String issueName, java.util.Set<String> assignees, String operator);
 
+    Mono<Issue> updateLabels(String issueName, java.util.Set<String> labels, String operator);
+
     Mono<IssueTemplateOptions> listIssueSelectTemplateOptions(String subjectName);
 }

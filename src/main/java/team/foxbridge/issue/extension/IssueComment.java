@@ -112,6 +112,8 @@ public class IssueComment extends AbstractExtension {
         STATUS_AWAIT,
         STATUS_CLOSED,
         ASSIGNEE_ADDED,
-        ASSIGNEE_REMOVED
+        ASSIGNEE_REMOVED,
+        LABEL_ADDED,
+        LABEL_REMOVED
     }
 }

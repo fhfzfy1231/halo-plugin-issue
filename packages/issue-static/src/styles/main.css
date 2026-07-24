@@ -171,3 +171,11 @@ ul {
     -ms-overflow-style: none;  /* IE 和 Edge */
     scrollbar-width: none;  /* Firefox */
 }
+/* Issue 详情页右侧信息栏：桌面端固定在视口内，左侧时间线滚动时保持可见 */
+@media (min-width: 1024px) {
+    .issue-detail-sidebar {
+        position: sticky;
+        top: 1.5rem;
+        align-self: flex-start;
+    }
+}

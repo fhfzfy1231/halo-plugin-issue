@@ -4,6 +4,7 @@ import team.foxbridge.issue.Constant;
 import team.foxbridge.issue.entity.IssueStats;
 import team.foxbridge.issue.entity.IssueTemplateOptions;
 import team.foxbridge.issue.extension.IssueComment;
+import team.foxbridge.issue.extension.IssueLabel;
 import team.foxbridge.issue.extension.IssueSubject;
 import team.foxbridge.issue.extension.IssueTemplate;
 import team.foxbridge.issue.finder.IssueSubjectFinder;
@@ -374,6 +375,57 @@ public class IssueServiceImpl implements IssueService {
                         return addedEvents.then(removedEvents).thenReturn(updatedIssue);
                     });
             });
+    }
+
+    @Override
+    public Mono<Issue> updateLabels(String issueName, Set<String> labels, String operator) {
+        Set<String> targetLabels = labels == null
+            ? new LinkedHashSet<>()
+            : new LinkedHashSet<>(labels);
+
+        return client.fetch(Issue.class, issueName)
+            .switchIfEmpty(Mono.error(new NotFoundException("Issue not found.")))
+            .flatMap(issue -> {
+                Set<String> oldLabels = issue.getSpec().getLabels() == null
+                    ? new LinkedHashSet<>()
+                    : new LinkedHashSet<>(issue.getSpec().getLabels());
+
+                Set<String> addedLabels = new LinkedHashSet<>(targetLabels);
+                addedLabels.removeAll(oldLabels);
+
+                Set<String> removedLabels = new LinkedHashSet<>(oldLabels);
+                removedLabels.removeAll(targetLabels);
+
+                issue.getSpec().setLabels(targetLabels);
+
+                return client.update(issue)
+                    .flatMap(updatedIssue -> {
+                        Mono<Void> addedEvents = Flux.fromIterable(addedLabels)
+                            .concatMap(labelName -> resolveLabelDisplayName(labelName)
+                                .flatMap(displayName -> createSystemEvent(
+                                    updatedIssue, operator,
+                                    IssueComment.IssueSystemEventType.LABEL_ADDED,
+                                    "添加了标签 " + displayName)))
+                            .then();
+                        Mono<Void> removedEvents = Flux.fromIterable(removedLabels)
+                            .concatMap(labelName -> resolveLabelDisplayName(labelName)
+                                .flatMap(displayName -> createSystemEvent(
+                                    updatedIssue, operator,
+                                    IssueComment.IssueSystemEventType.LABEL_REMOVED,
+                                    "移除了标签 " + displayName)))
+                            .then();
+                        return addedEvents.then(removedEvents).thenReturn(updatedIssue);
+                    });
+            });
+    }
+
+    private Mono<String> resolveLabelDisplayName(String labelName) {
+        return client.fetch(IssueLabel.class, labelName)
+            .map(label -> {
+                String displayName = label.getSpec() == null ? null : label.getSpec().getLabelName();
+                return displayName == null || displayName.isBlank() ? labelName : displayName;
+            })
+            .defaultIfEmpty(labelName);
     }
 
     private Mono<Void> createSystemEvent(

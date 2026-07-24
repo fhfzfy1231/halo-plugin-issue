@@ -314,11 +314,9 @@ public class UcIssueEndpoint implements CustomEndpoint {
                     ? Set.<String>of()
                     : new LinkedHashSet<>(param.getLabels());
                 return validateExtensionNames(IssueLabel.class, labels, "Unknown issue label: ")
-                    .then(client.get(Issue.class, name))
-                    .flatMap(issue -> {
-                        issue.getSpec().setLabels(labels);
-                        return issueService.updateBy(issue);
-                    });
+                    .then(roleService.getCurrentUser())
+                    .flatMap(currentUser ->
+                        issueService.updateLabels(name, labels, currentUser.getName()));
             })
             .flatMap(issue -> ServerResponse.ok().bodyValue(issue));
     }

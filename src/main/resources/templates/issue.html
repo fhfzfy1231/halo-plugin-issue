@@ -178,6 +178,8 @@ content = ~{::content}, version = ${pluginVersion}, head = ~{::head} )}">
                                             <span th:case="'STATUS_AWAIT'" class="piw-font-bold piw-text-indigo-600">…</span>
                                             <span th:case="'ASSIGNEE_ADDED'" class="piw-font-bold piw-text-slate-600">+</span>
                                             <span th:case="'ASSIGNEE_REMOVED'" class="piw-font-bold piw-text-slate-600">−</span>
+                                            <span th:case="'LABEL_ADDED'" class="piw-icon-[mingcute--tag-line] piw-text-green-700"></span>
+                                            <span th:case="'LABEL_REMOVED'" class="piw-icon-[mingcute--tag-line] piw-text-slate-500"></span>
                                             <span th:case="*" class="piw-font-bold piw-text-slate-500">•</span>
                                         </th:block>
                                     </span>
@@ -310,7 +312,7 @@ content = ~{::content}, version = ${pluginVersion}, head = ~{::head} )}">
                 </div>
             </div>
             <!--  右侧信息栏 -->
-            <div class="lg:piw-w-[28%] lg:piw-sticky piw-w-full piw-h-full piw-space-y-2 piw-divide-y piw-divide-slate-200">
+            <div class="issue-detail-sidebar lg:piw-w-[28%] piw-w-full piw-space-y-2 piw-divide-y piw-divide-slate-200">
                 <th:block th:replace="~{fragments/macro/issue-right::issueRight(${issueVO})}" />
             </div>
         </div>
