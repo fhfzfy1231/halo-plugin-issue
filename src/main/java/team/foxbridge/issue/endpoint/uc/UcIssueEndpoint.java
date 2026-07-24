@@ -8,6 +8,7 @@ import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuil
 import team.foxbridge.issue.entity.IssueStatusChangeParam;
 import team.foxbridge.issue.entity.IssueTemplateRender;
 import team.foxbridge.issue.extension.Issue;
+import team.foxbridge.issue.extension.IssueLabel;
 import team.foxbridge.issue.query.IssueQuery;
 import team.foxbridge.issue.service.IssueService;
 import team.foxbridge.issue.service.IssueTemplateService;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import java.time.Instant;
 import java.util.Set;
 import java.util.LinkedHashSet;
+import java.util.Comparator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
+import run.halo.app.core.extension.User;
 import run.halo.app.core.extension.endpoint.CustomEndpoint;
 
 import run.halo.app.extension.GroupVersion;
@@ -166,6 +170,25 @@ public class UcIssueEndpoint implements CustomEndpoint {
                         ))
                     .response(responseBuilder().implementation(Issue.class))
             )
+            .PUT("issues/{name}/assignees", this::updateIssueAssignees,
+                builder -> builder.operationId("UpdateIssueAssignees")
+                    .description("Update assignees for an issue. Issue management permission is required.")
+                    .tag(tag)
+                    .parameter(parameterBuilder()
+                        .name("name")
+                        .in(ParameterIn.PATH)
+                        .required(true)
+                        .implementation(String.class)
+                    )
+                    .requestBody(requestBodyBuilder()
+                        .required(true)
+                        .content(contentBuilder()
+                            .mediaType(MediaType.APPLICATION_JSON_VALUE)
+                            .schema(Builder.schemaBuilder()
+                                .implementation(IssueAssigneesUpdateParam.class))
+                        ))
+                    .response(responseBuilder().implementation(Issue.class))
+            )
             .DELETE("issues/{name}", this::deleteMyIssue,
                 builder -> builder.operationId("DeleteMyIssue")
                     .description("Delete a My Issue.")
@@ -190,6 +213,19 @@ public class UcIssueEndpoint implements CustomEndpoint {
                     )
                     .response(responseBuilder()
                         .implementationArray(String.class)
+                    ))
+            .GET("users", this::searchAssignableUsers,
+                builder -> builder.operationId("SearchAssignableUsers")
+                    .description("Search users that can be assigned to an issue.")
+                    .tag(tag)
+                    .parameter(parameterBuilder()
+                        .name("keyword")
+                        .in(ParameterIn.QUERY)
+                        .required(false)
+                        .implementation(String.class)
+                    )
+                    .response(responseBuilder()
+                        .implementationArray(AssignableUser.class)
                     ))
             .PUT("issuestatus", this::updateMyIssueStatus,
                 builder -> builder.operationId("UpdateMyIssueStatus")
@@ -271,29 +307,61 @@ public class UcIssueEndpoint implements CustomEndpoint {
 
     private Mono<ServerResponse> updateIssueLabels(ServerRequest request) {
         var name = request.pathVariable("name");
+        return requireIssueManagementPermission()
+            .then(request.bodyToMono(IssueLabelsUpdateParam.class))
+            .flatMap(param -> {
+                var labels = param.getLabels() == null
+                    ? Set.<String>of()
+                    : new LinkedHashSet<>(param.getLabels());
+                return validateExtensionNames(IssueLabel.class, labels, "Unknown issue label: ")
+                    .then(client.get(Issue.class, name))
+                    .flatMap(issue -> {
+                        issue.getSpec().setLabels(labels);
+                        return issueService.updateBy(issue);
+                    });
+            })
+            .flatMap(issue -> ServerResponse.ok().bodyValue(issue));
+    }
+
+    private Mono<ServerResponse> updateIssueAssignees(ServerRequest request) {
+        var name = request.pathVariable("name");
+        return requireIssueManagementPermission()
+            .then(request.bodyToMono(IssueAssigneesUpdateParam.class))
+            .flatMap(param -> {
+                var assignees = param.getAssignees() == null
+                    ? Set.<String>of()
+                    : new LinkedHashSet<>(param.getAssignees());
+                return validateExtensionNames(User.class, assignees, "Unknown user: ")
+                    .then(client.get(Issue.class, name))
+                    .flatMap(issue -> {
+                        issue.getSpec().setAssignees(assignees);
+                        return issueService.consoleUpdateIssue(issue);
+                    });
+            })
+            .flatMap(issue -> ServerResponse.ok().bodyValue(issue));
+    }
+
+    private Mono<Void> requireIssueManagementPermission() {
         return roleService.getCurrentUser()
             .flatMap(currentUser -> {
                 var roles = AuthorityUtils.authoritiesToRoles(currentUser.getAuthorities());
                 return roleService.joint(roles,
-                        Set.of(AuthorityUtils.ISSUE_MESSAGE_MANAGEMENT_ROLE_NAME,
-                            AuthorityUtils.SUPER_ROLE_NAME))
-                    .flatMap(hasPermission -> {
-                        if (!hasPermission) {
-                            return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN,
-                                "Issue management permission is required"));
-                        }
-                        return request.bodyToMono(IssueLabelsUpdateParam.class)
-                            .flatMap(param -> client.get(Issue.class, name)
-                                .flatMap(issue -> {
-                                    var labels = param.getLabels() == null
-                                        ? Set.<String>of()
-                                        : new LinkedHashSet<>(param.getLabels());
-                                    issue.getSpec().setLabels(labels);
-                                    return issueService.updateBy(issue);
-                                }));
-                    });
+                    Set.of(AuthorityUtils.ISSUE_MESSAGE_MANAGEMENT_ROLE_NAME,
+                        AuthorityUtils.SUPER_ROLE_NAME));
             })
-            .flatMap(issue -> ServerResponse.ok().bodyValue(issue));
+            .flatMap(hasPermission -> hasPermission
+                ? Mono.<Void>empty()
+                : Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Issue management permission is required")));
+    }
+
+    private <T extends run.halo.app.extension.Extension> Mono<Void> validateExtensionNames(
+        Class<T> extensionType, Set<String> names, String messagePrefix) {
+        return Flux.fromIterable(names)
+            .concatMap(name -> client.fetch(extensionType, name)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    messagePrefix + name))))
+            .then();
     }
 
     private Mono<ServerResponse> getMyIssue(ServerRequest request) {
@@ -352,6 +420,24 @@ public class UcIssueEndpoint implements CustomEndpoint {
                 name))
             .collectList()
             .flatMap(result -> ServerResponse.ok().bodyValue(result));
+    }
+
+    private Mono<ServerResponse> searchAssignableUsers(ServerRequest request) {
+        String keyword = request.queryParam("keyword").orElse("").trim();
+        return requireIssueManagementPermission()
+            .thenMany(client.list(User.class,
+                user -> {
+                    String name = user.getMetadata().getName();
+                    String displayName = user.getSpec().getDisplayName();
+                    return StringUtils.isBlank(keyword)
+                        || StringUtils.containsIgnoreCase(name, keyword)
+                        || StringUtils.containsIgnoreCase(displayName, keyword);
+                },
+                Comparator.comparing(user -> user.getMetadata().getName())))
+            .take(50)
+            .map(AssignableUser::from)
+            .collectList()
+            .flatMap(users -> ServerResponse.ok().bodyValue(users));
     }
 
     private Mono<ServerResponse> updateMyIssueStatus(ServerRequest request){
@@ -427,6 +513,27 @@ public class UcIssueEndpoint implements CustomEndpoint {
     @Data
     public static class IssueLabelsUpdateParam {
         private Set<String> labels = new LinkedHashSet<>();
+    }
+
+    @Data
+    public static class IssueAssigneesUpdateParam {
+        private Set<String> assignees = new LinkedHashSet<>();
+    }
+
+    @Data
+    public static class AssignableUser {
+        private String name;
+        private String displayName;
+        private String avatar;
+
+        static AssignableUser from(User user) {
+            var result = new AssignableUser();
+            result.setName(user.getMetadata().getName());
+            result.setDisplayName(StringUtils.defaultIfBlank(
+                user.getSpec().getDisplayName(), user.getMetadata().getName()));
+            result.setAvatar(user.getSpec().getAvatar());
+            return result;
+        }
     }
 
     @Override

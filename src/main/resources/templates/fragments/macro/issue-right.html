@@ -1,98 +1,148 @@
 <th:block th:fragment="issueRight(issueVO)">
-    <div class="piw-space-y-2 piw-py-3">
-        <p class="piw-text-sm piw-tracking-wider">经办人</p>
-        <div class="piw-flex piw-flex-wrap piw-items-center piw-gap-2" th:if="${ not #lists.isEmpty(issueVO.spec.assignees)}" >
-            <th:block th:each="assign:${issueVO.spec.assignees}">
-                <th:block th:with="assignUser = ${contributorFinder.getContributor(assign)}, avatar = ${assignUser.avatar}">
-                    <th:block th:if="${ not #strings.isEmpty(avatar) }">
-                        <img class="piw-size-9 piw-rounded-full piw-border piw-border-slate-200" th:src="${avatar}" draggable="false"
-                             th:alt="${name}"
-                             th:attr="x-data=|{assignUsername: '${assignUser.name}'}|"
-                             @mouseenter="main.showTooltip(assignUsername, $event)"
-                             @mouseleave="main.hideTooltip()"/>
-                    </th:block>
-                    <th:block th:if="${ #strings.isEmpty(avatar) }">
-                        <th:block th:if="${ #strings.equals(issueAvatarMode, 'default') }">
-                            <div class="piw-size-9 piw-rounded-full piw-flex piw-items-center piw-justify-center piw-bg-neutral-100 piw-border piw-border-slate-200"
-                                 th:attr="x-data=|{assignUsername: '${assignUser.name}'}|"
-                                 @mouseenter="main.showTooltip(assignUsername, $event)"
-                                 @mouseleave="main.hideTooltip()">
-                                <span class="piw-font-normal piw-text-3xl piw-text-neutral-800" th:text="${#strings.substring(assignUser.name, 0, 1)}"></span>
-                            </div>
-                        </th:block>
-                        <th:block th:if="${ #strings.equals(issueAvatarMode, 'random_figure') }">
-                            <img class="piw-size-9 piw-rounded-full piw-border piw-border-slate-200"
-                                 draggable="false" th:alt="${assignUser.name}"
-                                 th:attr="x-data=|{assignUsername: '${assignUser.name}', avatarUri: ''}|"
-                                 :src="avatarUri"
-                                 x-init="avatarUri = createAvatarByUserName(assignUsername)"
-                                 @mouseenter="main.showTooltip(assignUsername, $event)"
-                                 @mouseleave="main.hideTooltip()"/>
-                        </th:block>
+    <div th:attr="data-issue-name=${issueVO.metadata.name},
+                  data-assignees=${issueVO.spec.assignees == null ? '' : #strings.listJoin(issueVO.spec.assignees, ',')},
+                  data-labels=${issueVO.spec.labels == null ? '' : #strings.listJoin(issueVO.spec.labels, ',')}"
+         x-data="issueAssignmentManager"
+         class="piw-relative">
+        <div class="piw-space-y-2 piw-py-3">
+            <div class="piw-flex piw-items-center piw-justify-between">
+                <p class="piw-text-sm piw-tracking-wider">经办人</p>
+                <div sec:authorize="isAuthenticated()"
+                     x-data="uiPermission($el.dataset.currentUser, 'plugin:issues:manage')"
+                     th:attr="data-current-user=${#authentication.name}"
+                     x-show="shouldDisplay">
+                    <button type="button"
+                            @click="toggleAssignee()"
+                            class="piw-inline-flex piw-items-center piw-gap-1 piw-rounded-md piw-border piw-border-slate-300 piw-bg-white piw-px-2.5 piw-py-1 piw-text-xs piw-text-slate-700 hover:piw-bg-slate-50">
+                        <span class="piw-icon-[mingcute--user-add-line]"></span>
+                        分配经办人
+                        <span class="piw-icon-[mingcute--down-line] piw-transition-transform"
+                              :class="assigneeOpen && 'piw-rotate-180'"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="piw-flex piw-flex-wrap piw-items-center piw-gap-2"
+                 th:if="${not #lists.isEmpty(issueVO.spec.assignees)}">
+                <th:block th:each="assign:${issueVO.spec.assignees}">
+                    <th:block th:with="assignUser=${contributorFinder.getContributor(assign)}, avatar=${assignUser.avatar}">
+                        <div class="piw-inline-flex piw-items-center piw-gap-1.5 piw-rounded-full piw-bg-slate-100 piw-pr-2 piw-text-xs piw-text-slate-700">
+                            <img th:if="${not #strings.isEmpty(avatar)}"
+                                 class="piw-size-7 piw-rounded-full piw-border piw-border-slate-200"
+                                 th:src="${avatar}"
+                                 draggable="false"
+                                 th:alt="${assignUser.name}">
+                            <span th:if="${#strings.isEmpty(avatar)}"
+                                  class="piw-flex piw-size-7 piw-items-center piw-justify-center piw-rounded-full piw-bg-slate-200"
+                                  th:text="${#strings.substring(assignUser.name, 0, 1)}"></span>
+                            <span th:text="${assignUser.displayName}"></span>
+                        </div>
                     </th:block>
                 </th:block>
-            </th:block>
-        </div>
-        <p th:if="${ #lists.isEmpty(issueVO.spec.assignees) }" class="piw-text-sm piw-tracking-wider piw-text-neutral-400">
-            暂无经办人
-        </p>
-    </div>
-    <div class="piw-space-y-2 piw-py-3"
-         th:attr="data-issue-name=${issueVO.metadata.name}"
-         x-data="issueLabelManager">
-        <div class="piw-flex piw-items-center piw-justify-between">
-            <p class="piw-text-sm piw-tracking-wider">标签</p>
-            <span sec:authorize="isAuthenticated()"
-                  x-data="uiPermission($el.dataset.currentUser, 'plugin:issues:manage')"
-                  th:attr="data-current-user=${#authentication.name}"
-                  x-show="shouldDisplay"
-                  class="piw-text-xs piw-font-medium piw-text-green-700">可直接编辑</span>
-        </div>
-        <div class="piw-flex piw-flex-wrap piw-items-center piw-gap-1.5"
-             th:if="${#lists.size(issueVO.issueLabels) > 0}">
-            <th:block th:each="item:${issueVO.issueLabels}">
-                            <span th:text="${item.spec.labelName}" th:attr="x-data=|{labelColor: '${item.spec.color}'}|" :style="'background-color: ' + labelColor"
-                                  class="piw-px-3 piw-py-1 piw-text-xs piw-rounded-full piw-text-white"></span>
-            </th:block>
-        </div>
-        <p th:if="${ #lists.isEmpty(issueVO.spec.labels)}" class="piw-text-sm piw-tracking-wider piw-text-neutral-400">
-            暂无标签
-        </p>
-        <div sec:authorize="isAuthenticated()"
-             x-data="uiPermission($el.dataset.currentUser, 'plugin:issues:manage')"
-             th:attr="data-current-user=${#authentication.name}"
-             x-show="shouldDisplay"
-             class="piw-mt-2 piw-space-y-2 piw-rounded-md piw-border piw-border-slate-200 piw-bg-slate-50 piw-p-3">
-            <div class="piw-flex piw-max-h-48 piw-flex-col piw-gap-2 piw-overflow-y-auto">
-                <label th:each="label:${availableIssueLabels}"
-                       class="piw-flex piw-cursor-pointer piw-items-center piw-gap-2 piw-text-sm">
-                    <input type="checkbox"
-                           data-issue-label
-                           th:value="${label.metadata.name}"
-                           th:checked="${issueVO.spec.labels != null && issueVO.spec.labels.contains(label.metadata.name)}">
-                    <span class="piw-size-3 piw-rounded-full"
-                          th:style="|background-color:${label.spec.color}|"></span>
-                    <span th:text="${label.spec.labelName}"></span>
-                </label>
-                <p th:if="${#lists.isEmpty(availableIssueLabels)}"
-                   class="piw-text-xs piw-text-slate-400">暂无可用标签</p>
             </div>
-            <button type="button"
-                    :disabled="saving"
-                    @click="save()"
-                    x-text="saveText"
-                    class="piw-w-full piw-rounded-md piw-bg-green-700 piw-px-3 piw-py-1.5 piw-text-xs piw-text-white disabled:piw-opacity-60">
-                保存标签
-            </button>
+            <p th:if="${#lists.isEmpty(issueVO.spec.assignees)}"
+               class="piw-text-sm piw-tracking-wider piw-text-neutral-400">暂无经办人</p>
+
+            <div x-cloak
+                 x-show="assigneeOpen"
+                 @click.outside="assigneeOpen = false"
+                 class="piw-absolute piw-right-0 piw-z-30 piw-mt-1 piw-w-72 piw-rounded-lg piw-border piw-border-slate-200 piw-bg-white piw-p-3 piw-shadow-xl">
+                <div class="piw-relative">
+                    <span class="piw-icon-[mingcute--search-line] piw-absolute piw-left-2.5 piw-top-2.5 piw-text-slate-400"></span>
+                    <input type="search"
+                           x-model="userKeyword"
+                           @input="searchUsers()"
+                           placeholder="搜索用户名或显示名称"
+                           class="piw-w-full piw-rounded-md piw-border piw-border-slate-300 piw-py-2 piw-pl-8 piw-pr-3 piw-text-sm focus:piw-border-green-600 focus:piw-outline-none">
+                </div>
+                <div class="piw-mt-2 piw-max-h-56 piw-space-y-1 piw-overflow-y-auto">
+                    <p x-show="loadingUsers" class="piw-py-3 piw-text-center piw-text-xs piw-text-slate-400">正在搜索…</p>
+                    <template x-for="user in users" :key="user.name">
+                        <label class="piw-flex piw-cursor-pointer piw-items-center piw-gap-2 piw-rounded-md piw-p-2 hover:piw-bg-slate-50">
+                            <input type="checkbox"
+                                   :checked="selectedAssignees.includes(user.name)"
+                                   @change="toggleAssigneeValue(user.name)">
+                            <img x-show="user.avatar"
+                                 :src="user.avatar"
+                                 :alt="user.displayName"
+                                 class="piw-size-7 piw-rounded-full">
+                            <span x-show="!user.avatar"
+                                  class="piw-flex piw-size-7 piw-items-center piw-justify-center piw-rounded-full piw-bg-slate-200 piw-text-xs"
+                                  x-text="user.displayName.substring(0, 1)"></span>
+                            <span class="piw-min-w-0">
+                                <span class="piw-block piw-truncate piw-text-sm" x-text="user.displayName"></span>
+                                <span class="piw-block piw-truncate piw-text-xs piw-text-slate-400" x-text="'@' + user.name"></span>
+                            </span>
+                        </label>
+                    </template>
+                    <p x-show="!loadingUsers && users.length === 0"
+                       class="piw-py-3 piw-text-center piw-text-xs piw-text-slate-400">未找到用户</p>
+                </div>
+                <button type="button"
+                        :disabled="savingAssignees"
+                        @click="saveAssignees()"
+                        class="piw-mt-2 piw-w-full piw-rounded-md piw-bg-green-700 piw-px-3 piw-py-1.5 piw-text-xs piw-text-white disabled:piw-opacity-60"
+                        x-text="savingAssignees ? '保存中…' : '保存经办人'"></button>
+            </div>
+        </div>
+
+        <div class="piw-space-y-2 piw-py-3">
+            <div class="piw-flex piw-items-center piw-justify-between">
+                <p class="piw-text-sm piw-tracking-wider">标签</p>
+                <div sec:authorize="isAuthenticated()"
+                     x-data="uiPermission($el.dataset.currentUser, 'plugin:issues:manage')"
+                     th:attr="data-current-user=${#authentication.name}"
+                     x-show="shouldDisplay">
+                    <button type="button"
+                            @click="toggleLabel()"
+                            class="piw-inline-flex piw-items-center piw-gap-1 piw-rounded-md piw-border piw-border-slate-300 piw-bg-white piw-px-2.5 piw-py-1 piw-text-xs piw-text-slate-700 hover:piw-bg-slate-50">
+                        <span class="piw-icon-[mingcute--tag-line]"></span>
+                        分配标签
+                        <span class="piw-icon-[mingcute--down-line] piw-transition-transform"
+                              :class="labelOpen && 'piw-rotate-180'"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="piw-flex piw-flex-wrap piw-items-center piw-gap-1.5"
+                 th:if="${#lists.size(issueVO.issueLabels) > 0}">
+                <span th:each="item:${issueVO.issueLabels}"
+                      th:text="${item.spec.labelName}"
+                      th:style="|background-color:${item.spec.color}|"
+                      class="piw-rounded-full piw-px-3 piw-py-1 piw-text-xs piw-text-white"></span>
+            </div>
+            <p th:if="${#lists.isEmpty(issueVO.spec.labels)}"
+               class="piw-text-sm piw-tracking-wider piw-text-neutral-400">暂无标签</p>
+
+            <div x-cloak
+                 x-show="labelOpen"
+                 @click.outside="labelOpen = false"
+                 class="piw-absolute piw-right-0 piw-z-30 piw-mt-1 piw-w-64 piw-rounded-lg piw-border piw-border-slate-200 piw-bg-white piw-p-3 piw-shadow-xl">
+                <div class="piw-max-h-56 piw-space-y-1 piw-overflow-y-auto">
+                    <label th:each="label:${availableIssueLabels}"
+                           class="piw-flex piw-cursor-pointer piw-items-center piw-gap-2 piw-rounded-md piw-p-2 piw-text-sm hover:piw-bg-slate-50">
+                        <input type="checkbox"
+                               th:value="${label.metadata.name}"
+                               @change="toggleLabelValue($el.value)"
+                               :checked="selectedLabels.includes($el.value)">
+                        <span class="piw-size-3 piw-rounded-full"
+                              th:style="|background-color:${label.spec.color}|"></span>
+                        <span th:text="${label.spec.labelName}"></span>
+                    </label>
+                    <p th:if="${#lists.isEmpty(availableIssueLabels)}"
+                       class="piw-py-3 piw-text-center piw-text-xs piw-text-slate-400">暂无可用标签</p>
+                </div>
+                <button type="button"
+                        :disabled="savingLabels"
+                        @click="saveLabels()"
+                        class="piw-mt-2 piw-w-full piw-rounded-md piw-bg-green-700 piw-px-3 piw-py-1.5 piw-text-xs piw-text-white disabled:piw-opacity-60"
+                        x-text="savingLabels ? '保存中…' : '保存标签'"></button>
+            </div>
         </div>
     </div>
+
     <div class="piw-space-y-2 piw-py-3">
-        <div class="piw-flex piw-justify-between piw-items-center">
-            <p class="piw-text-xs piw-tracking-wider piw-font-bold">通知</p>
-<!--            <p class="piw-text-xs piw-tracking-wider piw-font-bold">自定义</p>-->
-        </div>
-        <div class="piw-flex piw-py-2 piw-items-center piw-gap-x-2 piw-justify-center piw-w-full piw-rounded-md piw-bg-slate-100/80 piw-border piw-border-slate-200
-                                hover:piw-cursor-pointer hover:piw-bg-slate-200/80">
+        <p class="piw-text-xs piw-font-bold piw-tracking-wider">通知</p>
+        <div class="piw-flex piw-w-full piw-cursor-pointer piw-items-center piw-justify-center piw-gap-x-2 piw-rounded-md piw-border piw-border-slate-200 piw-bg-slate-100/80 piw-py-2 hover:piw-bg-slate-200/80">
             <span class="piw-icon-[iconamoon--notification] piw-text-base"></span>
             <span class="piw-text-sm piw-text-neutral-600">订阅</span>
         </div>

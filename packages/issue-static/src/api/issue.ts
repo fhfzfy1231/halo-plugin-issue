@@ -33,6 +33,20 @@ export function updateIssueLabels(issueName: string, labels: string[]) {
     return axiosInstance.put(urlPath, { labels });
 }
 
+export function updateIssueAssignees(issueName: string, assignees: string[]) {
+    const urlPath = `${apiVersion}/issues/${issueName}/assignees`;
+    return axiosInstance.put(urlPath, { assignees });
+}
+
+export function searchAssignableUsers(keyword = "") {
+    const urlPath = `${apiVersion}/users`;
+    return axiosInstance.get(urlPath, {
+        params: {
+            keyword,
+        },
+    });
+}
+
 export function closedMyIssue(curIssueName: string, closedComment: string){
     const urlPath = `${apiVersion}/issuestatus`;
     return axiosInstance.put(urlPath, {issueName: curIssueName, changeComment: closedComment, issueState: 'CLOSED'})
