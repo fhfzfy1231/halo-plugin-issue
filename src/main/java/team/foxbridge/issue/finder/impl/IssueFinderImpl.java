@@ -137,7 +137,7 @@ public class IssueFinderImpl implements IssueFinder {
             ))
             .build();
         return client.listAll(IssueComment.class, listOptions, Sort.by("metadata.creationTimestamp").ascending())
-            .flatMap(this::getIssueCommentVo);
+            .concatMap(this::getIssueCommentVo);
     }
 
     record IssueMessageLabelPair(String labelName, String issueMessageName){}
