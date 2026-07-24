@@ -39,6 +39,9 @@ public class IssueTemplateServiceImpl implements IssueTemplateService {
 
     @Override
     public Mono<IssueTemplate> create(IssueTemplate issueTemplate) {
+        issueTemplate.getSpec().setScope(IssueTemplate.IssueTemplateScope.GLOBAL);
+        issueTemplate.getSpec().setSubjectType(null);
+        issueTemplate.getSpec().setSubjectName(null);
         return client.create(issueTemplate);
     }
 
@@ -124,7 +127,7 @@ public class IssueTemplateServiceImpl implements IssueTemplateService {
             .map(ListedIssueTemplate.ListedIssueTemplateBuilder::build)
             .flatMap(li -> setOwner(issueTemplate.getSpec().getOwner(), li))
             .flatMap(li -> {
-                if(li.getIssueTemplate().getSpec().getScope().name().equals("SUBJECT")){
+                if(li.getIssueTemplate().getSpec().getScope() == IssueTemplate.IssueTemplateScope.SUBJECT){
                     return client.fetch(IssueSubject.class, li.getIssueTemplate().getSpec().getSubjectName())
                         .map(issueSubject -> issueSubject.getSpec().getDisplayName())
                         .doOnNext(li::setSubjectDisplayName)

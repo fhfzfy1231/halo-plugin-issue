@@ -18,43 +18,23 @@ import {
 import { useRouter } from "vue-router";
 import UserFilterDropdown from "@/components/common/UserFilterDropdown.vue";
 import { useRouteQuery } from "@vueuse/router";
-import { computed, onMounted, provide, type Ref, ref, watch } from "vue";
+import { computed, provide, type Ref, ref, watch } from "vue";
 import type {
-  IssueSubject,
-  IssueSubjectSpecSubjectTypeEnum,
-  IssueTemplateSpecScopeEnum,
   ListedIssueTemplate,
 } from "@/api/generated";
-import { issueSubjectApiClient, issueTemplateApiClient } from "@/api";
+import { issueTemplateApiClient } from "@/api";
 import { useIssueTemplateListFetch } from "@/composables/use-consoleIssueTemplate";
-import { subjectTypeOptions, templateScopeTypeOptions } from "@/dictionary";
 
 const router = useRouter();
-const selectedTemplateScope = useRouteQuery<
-  IssueTemplateSpecScopeEnum | undefined
->("templateScope");
 const ownerName = useRouteQuery<string | undefined>("ownerName");
 const selectedSort = useRouteQuery<string | undefined>("sort");
-const selectedSubjectName = useRouteQuery<string | undefined>("subjectName");
-const selectedSubjectType = useRouteQuery<
-  IssueSubjectSpecSubjectTypeEnum | undefined
->("subjectType");
 
 const hasFilters = computed(() => {
-  return (
-    selectedSort.value ||
-    ownerName.value ||
-    selectedTemplateScope.value ||
-    selectedSubjectName.value ||
-    selectedSubjectType.value
-  );
+  return selectedSort.value || ownerName.value;
 });
 function handleClearFilters() {
   selectedSort.value = undefined;
   ownerName.value = undefined;
-  selectedTemplateScope.value = undefined;
-  selectedSubjectName.value = undefined;
-  selectedSubjectType.value = undefined;
 }
 
 const checkedAll = ref(false);
@@ -76,9 +56,6 @@ const { issueTemplates, isLoading, isFetching, refetch, total } =
     keyword,
     selectedSort,
     ownerName,
-    selectedTemplateScope,
-    selectedSubjectType,
-    selectedSubjectName,
   );
 
 const handlerNewIssueTemplate = () => {
@@ -113,22 +90,6 @@ const checkSelection = (listedIssueTemplate: ListedIssueTemplate) => {
   );
 };
 
-const subjectOptions = ref<Array<{ label: string | undefined; value: string }>>(
-  [],
-);
-
-const handlerIssueSubjectOptions = () => {
-  issueSubjectApiClient.issueSubject.listIssueSubject().then(({ data }) => {
-    data.items.forEach((it: IssueSubject) => {
-      const itemOption = {
-        label: it.spec.displayName,
-        value: it.metadata.name,
-      };
-      subjectOptions.value.push(itemOption);
-    });
-  });
-};
-
 const handleDeleteInBatch = async () => {
   Dialog.warning({
     title: "删除所选模版",
@@ -157,9 +118,6 @@ const handleDeleteInBatch = async () => {
   });
 };
 
-onMounted(() => {
-  handlerIssueSubjectOptions();
-});
 </script>
 
 <template>
@@ -218,21 +176,6 @@ onMounted(() => {
                       />
                     </HasPermission>
                     
-                    <FilterDropdown
-                      v-model="selectedTemplateScope"
-                      label="模版作用范围"
-                      :items="templateScopeTypeOptions"
-                    />
-                    <FilterDropdown
-                      v-model="selectedSubjectType"
-                      :items="subjectTypeOptions"
-                      label="依托主体类型"
-                    />
-                    <FilterDropdown
-                      v-model="selectedSubjectName"
-                      :items="subjectOptions"
-                      label="依托主体"
-                    />
                     <FilterDropdown
                       v-model="selectedSort"
                       label="排序"

@@ -13,7 +13,7 @@ spec:
   repo: https://github.com/fhfzfy1231/halo-plugin-issue
   issues: https://github.com/fhfzfy1231/halo-plugin-issue/issues
   displayName: "Issue"
-  description: "面向 Halo 2 的独立 Issue 管理插件，支持全局列表、内容查看、经办人和标签快捷分配。"
+  description: "面向 Halo 2 的独立 Issue 管理插件，支持全局列表、内容查看、经办人、标签和全局模板。"
   configMapName: halo-plugin-issue-configmap
   settingName: halo-plugin-issue-settings
   license:

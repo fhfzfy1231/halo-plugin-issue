@@ -7,25 +7,18 @@ import {
   VEntityField,
   Toast,
   VAvatar,
-  VSpace,
-  VTag,
-  IconExternalLinkLine,
 } from "@halo-dev/components";
-import { computed, inject, type Ref, ref } from "vue";
+import { inject, type Ref, ref } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
 
 import type { ListedIssueTemplate } from "@/api/generated";
-import {
-  issueSubjectApiClient,
-  issueTemplateApiClient,
-} from "@/api/index";
+import { issueTemplateApiClient } from "@/api/index";
 import { useRouter } from "vue-router";
-import { subjectTypeOptions } from "@/dictionary";
 const router = useRouter();
 
 const queryClient = useQueryClient();
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     issueTemplate: ListedIssueTemplate;
     isSelected?: boolean;
@@ -39,12 +32,6 @@ const selectedIssueTemplateNames = inject<Ref<string[]>>(
   "selectedIssueTemplateNames",
   ref([]),
 );
-const subjectTypeParseName = computed(() => {
-  const filterRes = subjectTypeOptions.value.filter(
-    (item) => item.value == props.issueTemplate.issueTemplate.spec?.subjectType,
-  );
-  return filterRes[0]?.label;
-});
 const handleDelete = async (issueTemplate: ListedIssueTemplate) => {
   Dialog.warning({
     title: "删除Issue模版",
@@ -68,24 +55,10 @@ const handleDelete = async (issueTemplate: ListedIssueTemplate) => {
 };
 
 const handleEditIssueTemplate = async (issueTemplate: ListedIssueTemplate) => {
-  const curTemplateSubjectList =
-    await issueSubjectApiClient.issueSubject.listIssueSubject({
-      fieldSelector: [
-        "spec.issueTemplates=(" +
-          issueTemplate.issueTemplate.metadata.name +
-          ")",
-      ],
-    });
-  if (curTemplateSubjectList.data.items.length > 0) {
-    Toast.warning(
-      "当前模版已有依托主体在使用，无法修改模版，请新建模版或删除该模版下的主体后进行修改！",
-    );
-  } else {
-    router.push({
-      name: "IssueTemplateEditor",
-      query: { name: issueTemplate.issueTemplate.metadata.name },
-    });
-  }
+  router.push({
+    name: "IssueTemplateEditor",
+    query: { name: issueTemplate.issueTemplate.metadata.name },
+  });
 };
 
 function handleRouteToUserDetail() {}
@@ -121,34 +94,6 @@ function handleRouteToUserDetail() {}
       </VEntityField>
     </template>
     <template #end>
-      <!--   issue模版作用范围   -->
-      <VEntityField>
-        <template #description>
-          <VTag
-            v-if="issueTemplate.issueTemplate.spec?.scope == 'GLOBAL'"
-            theme="primary"
-            class="cursor-auto"
-          >
-            <template #leftIcon>
-              <TablerCategoryFilled />
-            </template>
-            全局模版
-          </VTag>
-          <VTag
-            v-else-if="issueTemplate.issueTemplate.spec?.scope == 'SUBJECT_TYPE'"
-            theme="primary"
-            class="cursor-auto"
-          >
-            <template #leftIcon>
-              <TablerCategoryFilled />
-            </template>
-            主体类型模版
-          </VTag>
-          <VTag v-else theme="secondary" class="cursor-auto">
-            特定主体模版
-          </VTag>
-        </template>
-      </VEntityField>
       <VEntityField>
         <template #description>
           <VAvatar
@@ -159,42 +104,6 @@ function handleRouteToUserDetail() {}
             circle
             @click="handleRouteToUserDetail()"
           ></VAvatar>
-        </template>
-      </VEntityField>
-      <!--   针对主体类型和主体名称显示   -->
-      <VEntityField>
-        <template #extra>
-          <VSpace
-            v-if="issueTemplate.issueTemplate.spec?.scope == 'SUBJECT'"
-            class="mt-1 sm:mt-0"
-          >
-            <a
-              target="_blank"
-              :href="
-                '/subject/' + issueTemplate.issueTemplate?.spec?.subjectName
-              "
-              class="hidden text-gray-600 transition-all group-hover:inline-block hover:text-gray-900"
-            >
-              <IconExternalLinkLine class="h-3 w-3" />
-            </a>
-          </VSpace>
-        </template>
-        <template #description>
-          <p
-            v-if="issueTemplate.issueTemplate.spec?.scope == 'SUBJECT'"
-            v-tooltip="issueTemplate.subjectDisplayName"
-            class="px-2 py-0.5 text-xs rounded bg-gray-100"
-          >
-            {{ issueTemplate?.subjectDisplayName?.substring(0, 8) }}
-          </p>
-          <p
-            v-else-if="
-              issueTemplate.issueTemplate.spec?.scope == 'SUBJECT_TYPE'
-            "
-            class="px-2 py-0.5 text-xs rounded bg-gray-100"
-          >
-            {{ subjectTypeParseName }}
-          </p>
         </template>
       </VEntityField>
       <VEntityField

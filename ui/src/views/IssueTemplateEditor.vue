@@ -5,7 +5,6 @@ import {
   type SVGAttributes,
   watchEffect,
   onMounted,
-  computed,
 } from "vue";
 import draggable from "vuedraggable";
 import FluentMailTemplate20Regular from "~icons/fluent/mail-template-20-regular";
@@ -23,7 +22,6 @@ import {
 } from "@halo-dev/components";
 import { useRouter } from "vue-router";
 import {
-  type IssueSubject,
   type IssueTemplate,
   type TemplateField,
   TemplateFieldTypeEnum,
@@ -39,10 +37,8 @@ import { useRouteQuery } from "@vueuse/router";
 import { useCurrentUserDetailFetch } from "@/composables/use-consoleApiclient";
 import {
   consoleIssueTemplateApiClient,
-  issueSubjectApiClient,
   issueTemplateApiClient,
 } from "@/api";
-import { subjectTypeOptions, templateScopeTypeOptions } from "@/dictionary";
 const currentEditTemplate = useRouteQuery<string | undefined>("name");
 
 interface Component {
@@ -204,13 +200,6 @@ const isUpdateMode = ref(false);
 const templateLayout = ref<Component[]>([]);
 const selectedComponent = ref<Component | null>(null);
 
-const subjectOptions = ref<Array<{ label: string | undefined; value: string }>>(
-  [],
-);
-const subjectSelectTypeOptions = computed(() =>
-  subjectTypeOptions.value.filter((item) => item.label != "默认"),
-);
-
 watchEffect(() => {
   if (templateLayout.value.length == 0) {
     selectedComponent.value = null;
@@ -249,9 +238,6 @@ const handlerSelectComponent = (component: Component) => {
   selectedComponent.value = null;
   selectedComponent.value = component;
 };
-const templateSlectTypeOptions = computed(() =>
-  templateScopeTypeOptions.value.filter((item) => item.label != "默认"),
-);
 /**
  * 新增或更新issue模版
  */
@@ -262,6 +248,10 @@ const handlerSaveTemplate = () => {
   });
   if (initIssueTemplate.value.spec) {
     initIssueTemplate.value.spec.fields = fieldList.value;
+    // Issue 插件不再区分主体范围，所有模板统一作为全局模板保存。
+    initIssueTemplate.value.spec.scope = "GLOBAL";
+    initIssueTemplate.value.spec.subjectType = undefined;
+    initIssueTemplate.value.spec.subjectName = "";
   }
   // 新增issue模版
   if(!initIssueTemplate.value.spec?.name){
@@ -269,15 +259,6 @@ const handlerSaveTemplate = () => {
     return;
   }
 
-  if(initIssueTemplate.value.spec?.scope == "SUBJECT_TYPE" && !initIssueTemplate.value.spec?.subjectType){
-    Toast.warning("请选择模版作用的主体类型范围!");
-    return;
-  }
-
-  if(initIssueTemplate.value.spec?.scope == "SUBJECT" && !initIssueTemplate.value.spec?.subjectName){
-    Toast.warning("请选择模版作用的主体!");
-    return;
-  }
   if (isUpdateMode.value) {
     // 更新issue模版
     issueTemplateApiClient.issueTemplate
@@ -408,6 +389,11 @@ const initCurEditTemplate = async () => {
       name: currentEditTemplate.value,
     });
     const editIssueTemplate = result.data as IssueTemplate;
+    if (editIssueTemplate.spec) {
+      editIssueTemplate.spec.scope = "GLOBAL";
+      editIssueTemplate.spec.subjectType = undefined;
+      editIssueTemplate.spec.subjectName = "";
+    }
     initIssueTemplate.value = editIssueTemplate;
     isUpdateMode.value = true;
 
@@ -421,20 +407,7 @@ const initCurEditTemplate = async () => {
   }
 };
 
-const handlerIssueSubjectOptions = () => {
-  issueSubjectApiClient.issueSubject.listIssueSubject().then(({ data }) => {
-    data.items.forEach((it: IssueSubject) => {
-      const itemOption = {
-        label: it.spec.displayName,
-        value: it.metadata.name,
-      };
-      subjectOptions.value.push(itemOption);
-    });
-  });
-};
-
 onMounted(async () => {
-  handlerIssueSubjectOptions();
   await initCurEditTemplate();
 });
 </script>
@@ -568,34 +541,6 @@ onMounted(async () => {
                 name="name"
                 type="text"
                 validation="required"
-              />
-              <FormKit
-                v-if="initIssueTemplate.spec"
-                v-model="initIssueTemplate.spec.scope"
-                outer-class="w-full"
-                label="模版作用范围"
-                name="scope"
-                type="radio"
-                validation="required"
-                :options="templateSlectTypeOptions"
-              />
-              <FormKit
-                v-if="initIssueTemplate?.spec?.scope == 'SUBJECT_TYPE'"
-                type="select"
-                v-model="initIssueTemplate.spec.subjectType"
-                name="subjectType"
-                clearable
-                label="模版归属的主体类型"
-                :options="subjectSelectTypeOptions"
-              />
-              <FormKit
-                v-if="initIssueTemplate?.spec?.scope == 'SUBJECT'"
-                type="select"
-                v-model="initIssueTemplate.spec.subjectName"
-                name="subjectName"
-                clearable
-                label="模版归属的主体"
-                :options="subjectOptions"
               />
               <FormKit
                 v-if="initIssueTemplate.spec"
